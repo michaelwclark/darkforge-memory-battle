@@ -1,0 +1,23 @@
+# Pinned contestant versions. Lock before Track A run per SOW §5.
+# Update ONLY when the battle explicitly advances to a new contestant lock.
+contestants:
+  chromadb_baseline:
+    role: control
+    pip: "chromadb==0.5.20"
+    notes: "Bare vector store. No reranking. Control group that tests the 'ChromaDB is doing all the work' hypothesis about MemPalace."
+  mempalace:
+    role: subject
+    git_sha: TBD
+    notes: "Honest entry point = raw mode, not hybrid/reranked."
+  mem0:
+    role: contestant
+    git_sha: TBD
+  zep_graphiti:
+    role: contestant
+    git_sha: TBD
+  letta:
+    role: contestant
+    git_sha: TBD
+  hindsight:
+    role: contestant
+    git_sha: TBD

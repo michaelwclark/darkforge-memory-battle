@@ -1,0 +1,29 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# Secrets and local credentials — never commit
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Runtime state and contestant persistence
+data/
+
+# OS
+.DS_Store
+Thumbs.db
