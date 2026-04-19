@@ -48,16 +48,25 @@ class ChromaDbBaseline(Contestant):
         if self._client is None:
             self._persist_dir.mkdir(parents=True, exist_ok=True)
             self._client = chromadb.PersistentClient(path=str(self._persist_dir))
+        if self._collection is None:
             self._collection = self._client.get_or_create_collection(
                 name="battle",
                 embedding_function=self._embed,
             )
 
     def reset(self) -> None:
-        if self._persist_dir.exists():
-            shutil.rmtree(self._persist_dir)
-        self._client = None
-        self._collection = None
+        """Drop and recreate the collection in-place. Cheaper + more reliable
+        than rmtree/reinit, which races with Chroma's SQLite connection on
+        back-to-back per-question resets during Track A."""
+        self._ensure_client()
+        try:
+            self._client.delete_collection("battle")
+        except Exception:  # noqa: BLE001
+            pass
+        self._collection = self._client.get_or_create_collection(
+            name="battle",
+            embedding_function=self._embed,
+        )
 
     def ingest(self, items: list[dict]) -> IngestReceipt:
         self._ensure_client()
