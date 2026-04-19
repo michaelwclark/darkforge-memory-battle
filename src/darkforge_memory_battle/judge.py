@@ -83,6 +83,47 @@ information is unavailable.
 Return ONLY the JSON object. No prose, no fences."""
 
 
+SCORE_SYSTEM_V2 = """You are a rigorous evaluator scoring a candidate answer
+against a gold answer. Output strict JSON with fields:
+  score: float in [0.0, 1.0]
+  reason: one sentence
+
+Scoring rubric v2 — correctness-first, verbosity-neutral:
+- 1.0 = candidate contains everything the gold answer requires AND everything
+        it adds is factually correct (relative to the gold + general
+        knowledge). Extra correct facts do not reduce the score. Phrasing
+        differences do not reduce the score.
+- 0.75 = core answer is correct but adds a minor factual error, OR omits a
+        secondary fact the gold explicitly names.
+- 0.5 = partially correct; missing at least one key entity or fact the gold
+        requires, OR contains a significant factual error alongside a correct
+        answer.
+- 0.25 = tangentially related but wrong on the substance being asked.
+- 0.0 = wrong, hallucinated, or NOT_IN_CONTEXT when gold expected content.
+
+Treat NOT_IN_CONTEXT as 0.0 unless the gold answer itself indicates the
+information is unavailable.
+
+Rationale for v2 over v1: v1 penalized correct answers that include
+additional correct facts ("wording drift"). That creates a confound when
+comparing memory systems with different retrieval surfaces — systems that
+return richer context may yield more verbose answers and lose points despite
+being more informative. v2 keeps strictness about factual correctness while
+neutralizing verbosity as a score driver.
+
+Return ONLY the JSON object. No prose, no fences."""
+
+
+_SCORE_SYSTEMS = {"v1": SCORE_SYSTEM_V1, "v2": SCORE_SYSTEM_V2}
+
+
+def _score_system_for(version: str) -> str:
+    try:
+        return _SCORE_SYSTEMS[version]
+    except KeyError as e:
+        raise ValueError(f"unknown score_system_version: {version}") from e
+
+
 @dataclass(frozen=True)
 class AnswerResult:
     text: str
@@ -245,7 +286,7 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             model=CONFIG.model,
             max_tokens=256,
             temperature=CONFIG.temperature,
-            system=SCORE_SYSTEM_V1,
+            system=_score_system_for(CONFIG.rubric_version),
             messages=[{"role": "user", "content": prompt}],
         )
         raw = "".join(b.text for b in msg.content if b.type == "text").strip()
@@ -263,7 +304,7 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             max_tokens=256,
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": SCORE_SYSTEM_V1},
+                {"role": "system", "content": _score_system_for(CONFIG.rubric_version)},
                 {"role": "user", "content": prompt},
             ],
         )
@@ -278,7 +319,7 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
         )
     if CONFIG.provider == "claude_cli":
         text, in_t, out_t = _claude_cli_call(
-            system=SCORE_SYSTEM_V1,
+            system=_score_system_for(CONFIG.rubric_version),
             user=prompt,
             model=CONFIG.model,
             max_tokens=256,
@@ -303,10 +344,6 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
 
 def prompt_versions() -> dict[str, str]:
     return {
-        "answer_system": ANSWER_SYSTEM_V1_VERSION,
-        "score_system": SCORE_SYSTEM_V1_VERSION,
+        "answer_system": CONFIG.system_prompt_version,
+        "score_system": CONFIG.rubric_version,
     }
-
-
-ANSWER_SYSTEM_V1_VERSION = "v1"
-SCORE_SYSTEM_V1_VERSION = "v1"

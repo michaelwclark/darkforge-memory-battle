@@ -22,7 +22,7 @@ judge:
   temperature: 0.0
   max_tokens: 1024
   system_prompt_version: "v1"
-  rubric_version: "v1"
+  rubric_version: "v2"  # v2 is correctness-first, verbosity-neutral; adopted 2026-04-19 before Track A
 
 # Alternate: direct Anthropic API (battle-eligible, cleanest prompting).
 # judge:
