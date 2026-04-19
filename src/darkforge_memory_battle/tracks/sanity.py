@@ -108,7 +108,10 @@ def run_sanity(contestant: Contestant, top_k: int = 5) -> TrackResult:
         judge_provider=JUDGE_CFG.provider,
         judge_model=JUDGE_CFG.model,
         judge_temperature=JUDGE_CFG.temperature,
-        battle_eligible=(JUDGE_CFG.provider == "anthropic" and JUDGE_CFG.model == "claude-sonnet-4-6"),
+        battle_eligible=(
+            JUDGE_CFG.model == "claude-sonnet-4-6"
+            and JUDGE_CFG.provider in ("anthropic", "claude_cli")
+        ),
         prompt_versions=prompt_versions(),
         top_k=top_k,
         num_questions=len(SANITY_SET),

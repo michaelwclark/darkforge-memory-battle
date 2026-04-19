@@ -14,6 +14,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
@@ -32,7 +34,7 @@ load_dotenv(REPO_ROOT / ".env", override=True)
 
 @dataclass(frozen=True)
 class JudgeConfig:
-    provider: Literal["anthropic", "openai"]
+    provider: Literal["anthropic", "openai", "claude_cli"]
     model: str
     temperature: float
     max_tokens: int
@@ -100,6 +102,7 @@ class ScoreResult:
 
 _anthropic_client = None
 _openai_client = None
+_claude_cli_path: str | None = None
 
 
 def _get_anthropic():
@@ -124,6 +127,61 @@ def _get_openai():
             raise RuntimeError("OPENAI_API_KEY is not set (expected in .env or shell)")
         _openai_client = OpenAI(api_key=key)
     return _openai_client
+
+
+def _get_claude_cli() -> str:
+    """Resolve the `claude` CLI binary path (cached)."""
+    global _claude_cli_path
+    if _claude_cli_path is None:
+        p = shutil.which("claude")
+        if not p:
+            raise RuntimeError("`claude` CLI not found on PATH (install Claude Code)")
+        _claude_cli_path = p
+    return _claude_cli_path
+
+
+def _claude_cli_call(system: str, user: str, model: str, max_tokens: int) -> tuple[str, int, int]:
+    """One-shot Claude Code CLI call. Returns (text, input_tokens, output_tokens).
+
+    The CLI wraps its own agent system prompt around every call. We inject our
+    evaluator system prompt via --append-system-prompt so the agent operates
+    under BOTH the CLI base prompt AND our battle rubric. Record this in
+    provenance: runs via this channel are tagged judge_channel=claude_cli.
+    """
+    cmd = [
+        _get_claude_cli(),
+        "-p",
+        "--model",
+        model,
+        "--output-format",
+        "json",
+        "--append-system-prompt",
+        system,
+        user,
+    ]
+    proc = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=180,
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(f"claude CLI exit {proc.returncode}: {proc.stderr[:400]}")
+    data = json.loads(proc.stdout)
+    if data.get("is_error"):
+        raise RuntimeError(f"claude CLI returned error: {data.get('api_error_status')}")
+    text = data.get("result", "")
+    # CLI usage fields include a heavy cache-creation load on first call for
+    # its baseline system prompt. Sum them so accounting stays comparable.
+    usage = data.get("usage", {}) or {}
+    in_t = (
+        int(usage.get("input_tokens", 0))
+        + int(usage.get("cache_creation_input_tokens", 0))
+        + int(usage.get("cache_read_input_tokens", 0))
+    )
+    out_t = int(usage.get("output_tokens", 0))
+    return text, in_t, out_t
 
 
 # ---------- answer / score dispatchers ----------
@@ -164,6 +222,14 @@ def answer(context: str, question: str) -> AnswerResult:
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
         )
+    if CONFIG.provider == "claude_cli":
+        text, in_t, out_t = _claude_cli_call(
+            system=ANSWER_SYSTEM_V1,
+            user=user_msg,
+            model=CONFIG.model,
+            max_tokens=CONFIG.max_tokens,
+        )
+        return AnswerResult(text=text.strip(), input_tokens=in_t, output_tokens=out_t)
     raise ValueError(f"unknown judge provider: {CONFIG.provider}")
 
 
@@ -209,6 +275,28 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             reason=str(parsed["reason"]),
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
+        )
+    if CONFIG.provider == "claude_cli":
+        text, in_t, out_t = _claude_cli_call(
+            system=SCORE_SYSTEM_V1,
+            user=prompt,
+            model=CONFIG.model,
+            max_tokens=256,
+        )
+        # Strip any code fences the CLI's agent prompt might have added
+        stripped = text.strip()
+        if stripped.startswith("```"):
+            # e.g. ```json\n{...}\n```
+            stripped = stripped.split("```", 2)[1]
+            if stripped.startswith("json"):
+                stripped = stripped[4:]
+            stripped = stripped.rsplit("```", 1)[0].strip()
+        parsed = json.loads(stripped)
+        return ScoreResult(
+            score=float(parsed["score"]),
+            reason=str(parsed["reason"]),
+            input_tokens=in_t,
+            output_tokens=out_t,
         )
     raise ValueError(f"unknown judge provider: {CONFIG.provider}")
 

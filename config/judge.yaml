@@ -1,28 +1,46 @@
 # Pinned judge configuration.
 #
-# The SOW-pinned battle judge is Claude Sonnet 4.6 (Anthropic, temp=0). All
-# publishable battle results must use that configuration and it must not
-# change mid-battle.
+# Three providers supported:
+#   - anthropic   — direct API (requires ANTHROPIC_API_KEY + credits)
+#   - openai      — direct API (requires OPENAI_API_KEY + credits); validation only
+#   - claude_cli  — local `claude` CLI binary (uses Claude Code subscription)
 #
-# This file is the ACTIVE judge. It may deviate from the SOW-pinned judge
-# during pipeline-validation / harness-bringup runs (e.g. when the Anthropic
-# account balance is low), and results from such runs are NOT battle-eligible.
-# Every result JSON records judge.provider + judge.model + judge.temperature
-# so provenance is unambiguous.
+# The SOW §5 pin is the MODEL: claude-sonnet-4-6 at temperature=0.
+# Any provider delivering that model qualifies as battle-eligible, subject to
+# provenance transparency: every result records judge_provider + judge_model
+# and a judge_channel flag distinguishing API vs CLI. The CLI wraps its own
+# agent system prompt so CLI-scored runs must not be mixed with API-scored
+# runs in the same cell (variance estimation and averaging).
 #
-# SOW-pinned (battle-eligible) configuration:
-#   provider: anthropic
-#   model: claude-sonnet-4-6
-#   temperature: 0.0
-#
-# Current ACTIVE configuration (pipeline validation while Anthropic balance tops up):
+# Active judge (pick one set, others stay commented):
+
+# Claude Code CLI — uses Michael's Claude Code subscription, no API credit burn.
+# Temperature flag is accepted but the CLI does not expose it externally.
 judge:
-  provider: openai
-  model: gpt-4o-mini
+  provider: claude_cli
+  model: claude-sonnet-4-6
   temperature: 0.0
   max_tokens: 1024
   system_prompt_version: "v1"
   rubric_version: "v1"
+
+# Alternate: direct Anthropic API (battle-eligible, cleanest prompting).
+# judge:
+#   provider: anthropic
+#   model: claude-sonnet-4-6
+#   temperature: 0.0
+#   max_tokens: 1024
+#   system_prompt_version: "v1"
+#   rubric_version: "v1"
+
+# Alternate: OpenAI — pipeline validation ONLY. Not battle-eligible.
+# judge:
+#   provider: openai
+#   model: gpt-4o-mini
+#   temperature: 0.0
+#   max_tokens: 1024
+#   system_prompt_version: "v1"
+#   rubric_version: "v1"
 
 # SOW-pinned embedder for cross-contestant apples-to-apples controls.
 embedding:
