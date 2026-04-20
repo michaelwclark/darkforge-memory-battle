@@ -48,3 +48,26 @@ class Contestant(Protocol):
 
     def query(self, question: str, top_k: int = 10) -> QueryResult:
         """Retrieve context for a question."""
+
+
+@dataclass(frozen=True)
+class StackInfo:
+    """Provenance block stamped on every result so readers can tell which
+    embedder / internal LLM each contestant actually ran with. Needed for
+    fair ablation comparisons (same embedder across contestants vs. native
+    defaults)."""
+
+    embedder_provider: str | None = None  # e.g. "ollama", "openai", "cohere"
+    embedder_model: str | None = None  # e.g. "nomic-embed-text:latest"
+    internal_llm_provider: str | None = None  # e.g. None, "openai"
+    internal_llm_model: str | None = None  # e.g. None, "gpt-4o-mini"
+    notes: str = ""  # free text for contestants with quirks
+
+    def to_dict(self) -> dict:
+        return {
+            "embedder_provider": self.embedder_provider,
+            "embedder_model": self.embedder_model,
+            "internal_llm_provider": self.internal_llm_provider,
+            "internal_llm_model": self.internal_llm_model,
+            "notes": self.notes,
+        }

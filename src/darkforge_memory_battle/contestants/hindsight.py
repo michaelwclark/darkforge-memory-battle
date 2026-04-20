@@ -20,7 +20,7 @@ from typing import Any
 
 from hindsight_client import Hindsight
 
-from .base import Contestant, IngestReceipt, QueryResult
+from .base import Contestant, IngestReceipt, QueryResult, StackInfo
 
 
 class HindsightContestant(Contestant):
@@ -33,12 +33,28 @@ class HindsightContestant(Contestant):
         bank_id: str = "battle-sanity",
         recall_budget: str = "mid",
         recall_max_tokens: int = 4096,
+        internal_llm_provider: str = "openai",
+        internal_llm_model: str = "gpt-4o-mini",
     ) -> None:
         self._base_url = base_url
         self._bank_id = bank_id
         self._recall_budget = recall_budget
         self._recall_max_tokens = recall_max_tokens
+        self._internal_llm_provider = internal_llm_provider
+        self._internal_llm_model = internal_llm_model
         self._client: Hindsight | None = None
+
+    def stack_info(self) -> StackInfo:
+        return StackInfo(
+            embedder_provider="hindsight-internal",
+            embedder_model="hindsight-default",
+            internal_llm_provider=self._internal_llm_provider,
+            internal_llm_model=self._internal_llm_model,
+            notes=(
+                f"recall_budget={self._recall_budget}. "
+                "Internal LLM used for extraction + reflection + consolidation."
+            ),
+        )
 
     def _ensure_client(self) -> Hindsight:
         if self._client is None:

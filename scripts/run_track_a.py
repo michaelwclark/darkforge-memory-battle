@@ -23,6 +23,10 @@ def _build_contestant(name: str):
         from darkforge_memory_battle.contestants.hindsight import HindsightContestant
 
         return HindsightContestant(base_url="http://localhost:8888", bank_id="battle-track-a")
+    if name == "mem0":
+        from darkforge_memory_battle.contestants.mem0 import Mem0Contestant
+
+        return Mem0Contestant(bank_id="battle-track-a")
     raise ValueError(f"unknown contestant: {name}")
 
 

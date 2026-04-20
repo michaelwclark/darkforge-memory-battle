@@ -48,6 +48,8 @@ def notion_row_payload(result: Any) -> dict:
         "judge_model": p["judge_model"],
         "judge_temperature": p["judge_temperature"],
         "battle_eligible": p["battle_eligible"],
+        "recall_at_k_mean": p.get("recall_at_k_mean"),
+        "stack_info": p.get("stack_info"),
         "run_started_at": p["run_started_at"],
     }
 

@@ -32,12 +32,24 @@ class LmeItem:
     haystack_sessions: list[list[dict]]  # list of session; session = list of {role, content}
     haystack_dates: list[str]
     answer_session_ids: list[str]
+    haystack_session_ids: list[str] = ()
 
     def to_ingest_items(self) -> list[dict]:
-        """Flatten the haystack into contestant ingest format: one memory per turn."""
+        """Flatten the haystack into contestant ingest format: one memory per turn.
+
+        ID format: ``{qid}__s{s_idx}__t{t_idx}``. The session index is the
+        authoritative key; session_id (original string) is stashed in metadata
+        so recall@k can resolve retrieved ids back to LongMemEval's
+        ``answer_session_ids`` label.
+        """
         out = []
         for s_idx, session in enumerate(self.haystack_sessions):
             date = self.haystack_dates[s_idx] if s_idx < len(self.haystack_dates) else ""
+            session_id = (
+                self.haystack_session_ids[s_idx]
+                if s_idx < len(self.haystack_session_ids)
+                else f"s{s_idx}"
+            )
             for t_idx, turn in enumerate(session):
                 role = turn.get("role", "user")
                 content = turn.get("content", "")
@@ -48,10 +60,29 @@ class LmeItem:
                     {
                         "id": f"{self.question_id}__s{s_idx}__t{t_idx}",
                         "text": text,
-                        "metadata": {"qid": self.question_id, "session": str(s_idx), "role": role},
+                        "metadata": {
+                            "qid": self.question_id,
+                            "session": str(s_idx),
+                            "session_id": session_id,
+                            "role": role,
+                        },
                     }
                 )
         return out
+
+    def session_id_for(self, retrieved_id: str) -> str | None:
+        """Given a retrieved memory id, resolve back to the original
+        haystack session_id (or None if the id is unparseable)."""
+        if not retrieved_id or "__s" not in retrieved_id:
+            return None
+        try:
+            s_tok = retrieved_id.split("__s", 1)[1].split("__", 1)[0]
+            s_idx = int(s_tok)
+        except (ValueError, IndexError):
+            return None
+        if 0 <= s_idx < len(self.haystack_session_ids):
+            return self.haystack_session_ids[s_idx]
+        return f"s{s_idx}"
 
 
 def load(variant: str = "oracle") -> list[LmeItem]:
@@ -77,6 +108,7 @@ def load(variant: str = "oracle") -> list[LmeItem]:
             haystack_sessions=r["haystack_sessions"],
             haystack_dates=r.get("haystack_dates", []),
             answer_session_ids=r.get("answer_session_ids", []),
+            haystack_session_ids=tuple(r.get("haystack_session_ids", [])),
         )
         for r in raw
     ]

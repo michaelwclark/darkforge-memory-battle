@@ -57,6 +57,19 @@ class TrackResult:
     total_input_tokens: int
     total_output_tokens: int
     rows: list[dict]  # asdict(QaRunRow)
+    stack_info: dict | None = None
+    recall_at_k_mean: float | None = None
+    recall_at_k_scores: list[float] | None = None
+
+
+def _stack_info_for(contestant) -> dict | None:
+    fn = getattr(contestant, "stack_info", None)
+    if callable(fn):
+        try:
+            return fn().to_dict()
+        except Exception:  # noqa: BLE001
+            return None
+    return None
 
 
 def run_sanity(contestant: Contestant, top_k: int = 5) -> TrackResult:
@@ -125,6 +138,7 @@ def run_sanity(contestant: Contestant, top_k: int = 5) -> TrackResult:
         total_input_tokens=tot_in,
         total_output_tokens=tot_out,
         rows=[asdict(r) for r in rows],
+        stack_info=_stack_info_for(contestant),
     )
 
 

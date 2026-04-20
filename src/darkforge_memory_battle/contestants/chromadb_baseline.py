@@ -16,7 +16,7 @@ import chromadb
 from chromadb import EmbeddingFunction, Embeddings
 from ollama import Client as OllamaClient
 
-from .base import Contestant, IngestReceipt, QueryResult
+from .base import Contestant, IngestReceipt, QueryResult, StackInfo
 
 
 class OllamaEmbeddingFunction(EmbeddingFunction):
@@ -38,11 +38,25 @@ class ChromaDbBaseline(Contestant):
     name = "chromadb_baseline"
     role = "control"
 
-    def __init__(self, persist_dir: Path | str = "./data/chromadb_baseline") -> None:
+    def __init__(
+        self,
+        persist_dir: Path | str = "./data/chromadb_baseline",
+        embed_model: str = "nomic-embed-text:latest",
+    ) -> None:
         self._persist_dir = Path(persist_dir)
-        self._embed = OllamaEmbeddingFunction()
+        self._embed_model_name = embed_model
+        self._embed = OllamaEmbeddingFunction(model=embed_model)
         self._client = None
         self._collection = None
+
+    def stack_info(self) -> StackInfo:
+        return StackInfo(
+            embedder_provider="ollama",
+            embedder_model=self._embed_model_name,
+            internal_llm_provider=None,
+            internal_llm_model=None,
+            notes="Bare vector store, no reranking, no LLM in the ingest or recall path.",
+        )
 
     def _ensure_client(self) -> None:
         if self._client is None:

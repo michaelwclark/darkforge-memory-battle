@@ -20,7 +20,7 @@ from ..contestants.base import Contestant
 from ..datasets.longmemeval import LmeItem
 from ..judge import CONFIG as JUDGE_CFG
 from ..judge import answer, prompt_versions, score
-from .sanity import TrackResult, _pct  # reuse shape + percentile helper
+from .sanity import TrackResult, _pct, _stack_info_for  # reuse helpers
 
 
 @dataclass
@@ -39,6 +39,10 @@ class QaRunRow:
     answer_output_tokens: int
     score_input_tokens: int
     score_output_tokens: int
+    retrieved_ids: list[str] = field(default_factory=list)
+    retrieved_session_ids: list[str] = field(default_factory=list)
+    recall_at_k: float = 0.0  # 1.0 if any answer_session_id in retrieved, else 0.0
+    answer_session_ids: list[str] = field(default_factory=list)
 
 
 def run_track_a(
@@ -68,6 +72,15 @@ def run_track_a(
         ret_sec = retrieved.elapsed_seconds or (time.perf_counter() - t0)
         retrieve_times.append(ret_sec)
 
+        # recall@k: did any retrieved memory come from one of the answer sessions?
+        retrieved_session_ids: list[str] = []
+        for rid in retrieved.retrieved_ids:
+            sid = lme.session_id_for(rid)
+            if sid:
+                retrieved_session_ids.append(sid)
+        answer_set = set(lme.answer_session_ids)
+        recall_hit = 1.0 if (answer_set & set(retrieved_session_ids)) else 0.0
+
         ans = answer(retrieved.context, lme.question)
         sc = score(lme.question, lme.answer, ans.text)
         tot_in += ans.input_tokens + sc.input_tokens
@@ -89,10 +102,15 @@ def run_track_a(
                 answer_output_tokens=ans.output_tokens,
                 score_input_tokens=sc.input_tokens,
                 score_output_tokens=sc.output_tokens,
+                retrieved_ids=list(retrieved.retrieved_ids),
+                retrieved_session_ids=retrieved_session_ids,
+                recall_at_k=recall_hit,
+                answer_session_ids=list(lme.answer_session_ids),
             )
         )
 
     scores = [r.score for r in rows]
+    recalls = [r.recall_at_k for r in rows]
     return TrackResult(
         track=label,
         contestant=contestant.name,
@@ -119,4 +137,7 @@ def run_track_a(
         total_input_tokens=tot_in,
         total_output_tokens=tot_out,
         rows=[asdict(r) for r in rows],
+        stack_info=_stack_info_for(contestant),
+        recall_at_k_mean=(statistics.fmean(recalls) if recalls else 0.0),
+        recall_at_k_scores=recalls,
     )
