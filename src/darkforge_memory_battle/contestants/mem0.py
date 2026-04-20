@@ -17,8 +17,19 @@ import time
 from pathlib import Path
 
 from mem0 import Memory
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from .base import Contestant, IngestReceipt, QueryResult, StackInfo
+
+# Mem0 (with infer=True) calls OpenAI on every add() and search(). Retry
+# OpenAI connection errors / timeouts so a brief network hiccup doesn't
+# wipe a multi-hour sweep.
+try:
+    from openai import APIConnectionError, APITimeoutError, RateLimitError
+
+    _MEM0_RETRYABLE = (APIConnectionError, APITimeoutError, RateLimitError, OSError)
+except ImportError:  # pragma: no cover
+    _MEM0_RETRYABLE = (OSError,)
 
 
 _DEFAULT_CONFIG = {
@@ -92,6 +103,29 @@ class Mem0Contestant(Contestant):
             except FileNotFoundError:
                 pass
 
+    @retry(
+        stop=stop_after_attempt(6),
+        wait=wait_exponential(min=2, max=60),
+        retry=retry_if_exception_type(_MEM0_RETRYABLE),
+        reraise=True,
+    )
+    def _add_with_retry(self, mem: Memory, text: str, metadata: dict) -> None:
+        mem.add(
+            messages=[{"role": "user", "content": text}],
+            user_id=self._bank_id,
+            metadata=metadata,
+            infer=True,
+        )
+
+    @retry(
+        stop=stop_after_attempt(6),
+        wait=wait_exponential(min=2, max=60),
+        retry=retry_if_exception_type(_MEM0_RETRYABLE),
+        reraise=True,
+    )
+    def _search_with_retry(self, mem: Memory, query: str, top_k: int) -> dict | None:
+        return mem.search(query=query, top_k=top_k, filters={"user_id": self._bank_id})
+
     def ingest(self, items: list[dict]) -> IngestReceipt:
         mem = self._ensure()
         t0 = time.perf_counter()
@@ -100,12 +134,7 @@ class Mem0Contestant(Contestant):
             # Stash our source ingest id in metadata so recall@k can trace
             # Mem0's extracted memories back to the original conversation turn.
             md.setdefault("source_id", str(it["id"]))
-            mem.add(
-                messages=[{"role": "user", "content": it["text"]}],
-                user_id=self._bank_id,
-                metadata=md,
-                infer=True,
-            )
+            self._add_with_retry(mem, it["text"], md)
         return IngestReceipt(
             items_written=len(items),
             elapsed_seconds=time.perf_counter() - t0,
@@ -114,7 +143,7 @@ class Mem0Contestant(Contestant):
     def query(self, question: str, top_k: int = 10) -> QueryResult:
         mem = self._ensure()
         t0 = time.perf_counter()
-        res = mem.search(query=question, top_k=top_k, filters={"user_id": self._bank_id})
+        res = self._search_with_retry(mem, question, top_k)
         elapsed = time.perf_counter() - t0
         # Mem0 search returns a dict with "results": [{"id","memory","score",...}]
         entries = (res or {}).get("results", []) if isinstance(res, dict) else []

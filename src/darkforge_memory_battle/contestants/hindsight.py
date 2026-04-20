@@ -77,12 +77,29 @@ class HindsightContestant(Contestant):
         c.create_bank(self._bank_id)
 
     @retry(
-        stop=stop_after_attempt(3),
-        wait=wait_exponential(min=2, max=30),
+        stop=stop_after_attempt(6),
+        wait=wait_exponential(min=2, max=60),
         retry=retry_if_exception_type(_NETWORK_EXCEPTIONS),
+        reraise=True,
     )
     def _retain_chunk(self, client: Hindsight, chunk: list[dict[str, Any]]) -> None:
         client.retain_batch(bank_id=self._bank_id, items=chunk, retain_async=False)
+
+    @retry(
+        stop=stop_after_attempt(6),
+        wait=wait_exponential(min=2, max=60),
+        retry=retry_if_exception_type(_NETWORK_EXCEPTIONS),
+        reraise=True,
+    )
+    def _recall_with_retry(
+        self, client: Hindsight, query: str, token_budget: int
+    ):
+        return client.recall(
+            bank_id=self._bank_id,
+            query=query,
+            budget=self._recall_budget,
+            max_tokens=token_budget,
+        )
 
     def ingest(self, items: list[dict]) -> IngestReceipt:
         c = self._ensure_client()
@@ -109,12 +126,7 @@ class HindsightContestant(Contestant):
         c = self._ensure_client()
         t0 = time.perf_counter()
         token_budget = max(self._recall_max_tokens, top_k * 512)
-        res = c.recall(
-            bank_id=self._bank_id,
-            query=question,
-            budget=self._recall_budget,
-            max_tokens=token_budget,
-        )
+        res = self._recall_with_retry(c, question, token_budget)
         elapsed = time.perf_counter() - t0
         # RecallResponse has .results (list of memory items, each with .text and
         # .document_id). Join the texts as our answer-facing context and keep
