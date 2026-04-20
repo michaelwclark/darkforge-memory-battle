@@ -1,48 +1,31 @@
-# Pinned judge configuration.
+# Active judge configuration.
 #
-# Three providers supported:
-#   - anthropic   — direct API (requires ANTHROPIC_API_KEY + credits)
-#   - openai      — direct API (requires OPENAI_API_KEY + credits); validation only
-#   - claude_cli  — local `claude` CLI binary (uses Claude Code subscription)
+# DEFAULT: Ollama qwen2.5:14b-instruct. Local, zero network, zero subscription
+# cost. Used for all development work, variance sweeps, new-contestant probes.
+# Marked `battle_eligible=false` because the SOW pin is claude-sonnet-4-6.
 #
-# The SOW §5 pin is the MODEL: claude-sonnet-4-6 at temperature=0.
-# Any provider delivering that model qualifies as battle-eligible, subject to
-# provenance transparency: every result records judge_provider + judge_model
-# and a judge_channel flag distinguishing API vs CLI. The CLI wraps its own
-# agent system prompt so CLI-scored runs must not be mixed with API-scored
-# runs in the same cell (variance estimation and averaging).
+# For BATTLE-ELIGIBLE publishable runs, load `config/judge.battle.yaml`
+# (OpenRouter → claude-sonnet-4-6). That path bills openrouter.ai credits
+# directly, leaving Michael's Claude Code subscription 100% free for
+# interactive coding work.
 #
-# Active judge (pick one set, others stay commented):
+# Provider matrix (all implemented in judge.py):
+#   - ollama      : local qwen2.5:14b, free, dev only
+#   - openai      : gpt-4o-mini via OPENAI_API_KEY, validation only
+#   - anthropic   : Claude via direct API, battle-eligible, uses API credits
+#   - claude_cli  : Claude via `claude -p` CLI, DEPRECATED for the harness
+#                   (competes with interactive Claude Code subscription usage)
+#   - openrouter  : any model via OPENROUTER_API_KEY, battle-eligible when
+#                   model=claude-sonnet-4-6
 
-# Claude Code CLI — uses Michael's Claude Code subscription, no API credit burn.
-# Temperature flag is accepted but the CLI does not expose it externally.
 judge:
-  provider: claude_cli
-  model: claude-sonnet-4-6
+  provider: ollama
+  model: qwen2.5:14b-instruct
   temperature: 0.0
   max_tokens: 1024
   system_prompt_version: "v1"
-  rubric_version: "v2"  # v2 is correctness-first, verbosity-neutral; adopted 2026-04-19 before Track A
+  rubric_version: "v2"
 
-# Alternate: direct Anthropic API (battle-eligible, cleanest prompting).
-# judge:
-#   provider: anthropic
-#   model: claude-sonnet-4-6
-#   temperature: 0.0
-#   max_tokens: 1024
-#   system_prompt_version: "v1"
-#   rubric_version: "v1"
-
-# Alternate: OpenAI — pipeline validation ONLY. Not battle-eligible.
-# judge:
-#   provider: openai
-#   model: gpt-4o-mini
-#   temperature: 0.0
-#   max_tokens: 1024
-#   system_prompt_version: "v1"
-#   rubric_version: "v1"
-
-# SOW-pinned embedder for cross-contestant apples-to-apples controls.
 embedding:
   provider: "ollama"
   model: "nomic-embed-text:latest"

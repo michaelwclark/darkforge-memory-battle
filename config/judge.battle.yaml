@@ -1,0 +1,24 @@
+# BATTLE-ELIGIBLE judge configuration.
+#
+# Load this only for publishable runs whose results will appear in Article 1.
+# Pins claude-sonnet-4-6 via OpenRouter so:
+#   - Weights match SOW §5 (same model as a direct Anthropic call)
+#   - Billing lands on openrouter.ai, NOT on the Claude Code subscription
+#   - Interactive Claude Code usage is 100% insulated from battle runs
+#
+# Usage:
+#   BATTLE_JUDGE_CONFIG=config/judge.battle.yaml uv run python scripts/run_track_a.py ...
+# (or point config/judge.yaml at this file via symlink/include when ready)
+
+judge:
+  provider: openrouter
+  model: anthropic/claude-sonnet-4.6
+  temperature: 0.0
+  max_tokens: 1024
+  system_prompt_version: "v1"
+  rubric_version: "v2"
+
+embedding:
+  provider: "ollama"
+  model: "nomic-embed-text:latest"
+  dimensions: 768

@@ -24,8 +24,12 @@ import yaml
 from dotenv import load_dotenv
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-CONFIG_PATH = Path(__file__).resolve().parents[2] / "config" / "judge.yaml"
 REPO_ROOT = Path(__file__).resolve().parents[2]
+# BATTLE_JUDGE_CONFIG env overrides the default config path so a publishable
+# run can load config/judge.battle.yaml without editing judge.yaml.
+CONFIG_PATH = Path(
+    os.environ.get("BATTLE_JUDGE_CONFIG", str(REPO_ROOT / "config" / "judge.yaml"))
+)
 
 # override=True because some sandboxed shells inject secret-named vars as
 # empty strings, which silently masks the real key in .env.
@@ -34,7 +38,7 @@ load_dotenv(REPO_ROOT / ".env", override=True)
 
 @dataclass(frozen=True)
 class JudgeConfig:
-    provider: Literal["anthropic", "openai", "claude_cli"]
+    provider: Literal["anthropic", "openai", "claude_cli", "ollama", "openrouter"]
     model: str
     temperature: float
     max_tokens: int
@@ -143,6 +147,8 @@ class ScoreResult:
 
 _anthropic_client = None
 _openai_client = None
+_ollama_client = None
+_openrouter_client = None
 _claude_cli_path: str | None = None
 
 
@@ -168,6 +174,41 @@ def _get_openai():
             raise RuntimeError("OPENAI_API_KEY is not set (expected in .env or shell)")
         _openai_client = OpenAI(api_key=key)
     return _openai_client
+
+
+def _get_ollama():
+    """Ollama client for local judge. Zero network, zero subscription cost."""
+    global _ollama_client
+    if _ollama_client is None:
+        from ollama import Client
+
+        _ollama_client = Client(host=os.environ.get("OLLAMA_HOST", "http://localhost:11434"))
+    return _ollama_client
+
+
+def _get_openrouter():
+    """OpenRouter is OpenAI-compatible. One key, many models.
+
+    Bills against openrouter.ai credits, NOT the local Claude Code subscription.
+    Use this for battle-eligible Claude-Sonnet-4.6 runs so the subscription
+    stays 100% available for interactive coding work.
+    """
+    global _openrouter_client
+    if _openrouter_client is None:
+        from openai import OpenAI
+
+        key = os.environ.get("OPENROUTER_API_KEY")
+        if not key:
+            raise RuntimeError("OPENROUTER_API_KEY is not set (expected in .env or shell)")
+        _openrouter_client = OpenAI(
+            api_key=key,
+            base_url="https://openrouter.ai/api/v1",
+            default_headers={
+                "HTTP-Referer": "https://github.com/michaelwclark/darkforge-memory-battle",
+                "X-Title": "Memory Battle (Dark Forge)",
+            },
+        )
+    return _openrouter_client
 
 
 def _get_claude_cli() -> str:
@@ -271,6 +312,37 @@ def answer(context: str, question: str) -> AnswerResult:
             max_tokens=CONFIG.max_tokens,
         )
         return AnswerResult(text=text.strip(), input_tokens=in_t, output_tokens=out_t)
+    if CONFIG.provider == "ollama":
+        resp = _get_ollama().chat(
+            model=CONFIG.model,
+            messages=[
+                {"role": "system", "content": ANSWER_SYSTEM_V1},
+                {"role": "user", "content": user_msg},
+            ],
+            options={"temperature": CONFIG.temperature, "num_predict": CONFIG.max_tokens},
+        )
+        text = (resp.get("message", {}) or {}).get("content", "") if isinstance(resp, dict) else resp.message.content
+        return AnswerResult(
+            text=(text or "").strip(),
+            input_tokens=int(getattr(resp, "prompt_eval_count", 0) or (resp.get("prompt_eval_count", 0) if isinstance(resp, dict) else 0)),
+            output_tokens=int(getattr(resp, "eval_count", 0) or (resp.get("eval_count", 0) if isinstance(resp, dict) else 0)),
+        )
+    if CONFIG.provider == "openrouter":
+        resp = _get_openrouter().chat.completions.create(
+            model=CONFIG.model,
+            temperature=CONFIG.temperature,
+            max_tokens=CONFIG.max_tokens,
+            messages=[
+                {"role": "system", "content": ANSWER_SYSTEM_V1},
+                {"role": "user", "content": user_msg},
+            ],
+        )
+        usage = resp.usage
+        return AnswerResult(
+            text=(resp.choices[0].message.content or "").strip(),
+            input_tokens=usage.prompt_tokens if usage else 0,
+            output_tokens=usage.completion_tokens if usage else 0,
+        )
     raise ValueError(f"unknown judge provider: {CONFIG.provider}")
 
 
@@ -324,22 +396,63 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             model=CONFIG.model,
             max_tokens=256,
         )
-        # Strip any code fences the CLI's agent prompt might have added
-        stripped = text.strip()
-        if stripped.startswith("```"):
-            # e.g. ```json\n{...}\n```
-            stripped = stripped.split("```", 2)[1]
-            if stripped.startswith("json"):
-                stripped = stripped[4:]
-            stripped = stripped.rsplit("```", 1)[0].strip()
-        parsed = json.loads(stripped)
+        parsed = json.loads(_strip_code_fence(text))
         return ScoreResult(
             score=float(parsed["score"]),
             reason=str(parsed["reason"]),
             input_tokens=in_t,
             output_tokens=out_t,
         )
+    if CONFIG.provider == "ollama":
+        resp = _get_ollama().chat(
+            model=CONFIG.model,
+            messages=[
+                {"role": "system", "content": _score_system_for(CONFIG.rubric_version)},
+                {"role": "user", "content": prompt},
+            ],
+            format="json",
+            options={"temperature": CONFIG.temperature, "num_predict": 256},
+        )
+        text = (resp.get("message", {}) or {}).get("content", "") if isinstance(resp, dict) else resp.message.content
+        parsed = json.loads(_strip_code_fence(text or ""))
+        return ScoreResult(
+            score=float(parsed["score"]),
+            reason=str(parsed["reason"]),
+            input_tokens=int(getattr(resp, "prompt_eval_count", 0) or (resp.get("prompt_eval_count", 0) if isinstance(resp, dict) else 0)),
+            output_tokens=int(getattr(resp, "eval_count", 0) or (resp.get("eval_count", 0) if isinstance(resp, dict) else 0)),
+        )
+    if CONFIG.provider == "openrouter":
+        resp = _get_openrouter().chat.completions.create(
+            model=CONFIG.model,
+            temperature=CONFIG.temperature,
+            max_tokens=256,
+            response_format={"type": "json_object"},
+            messages=[
+                {"role": "system", "content": _score_system_for(CONFIG.rubric_version)},
+                {"role": "user", "content": prompt},
+            ],
+        )
+        raw = (resp.choices[0].message.content or "").strip()
+        parsed = json.loads(_strip_code_fence(raw))
+        usage = resp.usage
+        return ScoreResult(
+            score=float(parsed["score"]),
+            reason=str(parsed["reason"]),
+            input_tokens=usage.prompt_tokens if usage else 0,
+            output_tokens=usage.completion_tokens if usage else 0,
+        )
     raise ValueError(f"unknown judge provider: {CONFIG.provider}")
+
+
+def _strip_code_fence(text: str) -> str:
+    """Defensively strip ```json ...``` fences some models add to JSON replies."""
+    stripped = text.strip()
+    if stripped.startswith("```"):
+        stripped = stripped.split("```", 2)[1]
+        if stripped.startswith("json"):
+            stripped = stripped[4:]
+        stripped = stripped.rsplit("```", 1)[0].strip()
+    return stripped
 
 
 def prompt_versions() -> dict[str, str]:

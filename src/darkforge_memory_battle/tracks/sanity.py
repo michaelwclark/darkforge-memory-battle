@@ -122,8 +122,8 @@ def run_sanity(contestant: Contestant, top_k: int = 5) -> TrackResult:
         judge_model=JUDGE_CFG.model,
         judge_temperature=JUDGE_CFG.temperature,
         battle_eligible=(
-            JUDGE_CFG.model == "claude-sonnet-4-6"
-            and JUDGE_CFG.provider in ("anthropic", "claude_cli")
+            JUDGE_CFG.model in ("claude-sonnet-4-6", "anthropic/claude-sonnet-4.6")
+            and JUDGE_CFG.provider in ("anthropic", "claude_cli", "openrouter")
         ),
         prompt_versions=prompt_versions(),
         top_k=top_k,
