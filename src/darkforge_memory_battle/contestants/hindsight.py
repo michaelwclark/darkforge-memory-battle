@@ -19,8 +19,14 @@ import time
 from typing import Any
 
 from hindsight_client import Hindsight
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from .base import Contestant, IngestReceipt, QueryResult, StackInfo
+
+# Hindsight's server calls OpenAI internally on every retain; when OpenAI
+# is slow the aiohttp pool-request can raise TimeoutError mid-run and kill
+# a 40-minute Track A. Retry those explicitly.
+_NETWORK_EXCEPTIONS = (TimeoutError, ConnectionError, OSError)
 
 
 class HindsightContestant(Contestant):
@@ -70,16 +76,26 @@ class HindsightContestant(Contestant):
             pass
         c.create_bank(self._bank_id)
 
+    @retry(
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(min=2, max=30),
+        retry=retry_if_exception_type(_NETWORK_EXCEPTIONS),
+    )
+    def _retain_chunk(self, client: Hindsight, chunk: list[dict[str, Any]]) -> None:
+        client.retain_batch(bank_id=self._bank_id, items=chunk, retain_async=False)
+
     def ingest(self, items: list[dict]) -> IngestReceipt:
         c = self._ensure_client()
         t0 = time.perf_counter()
-        # retain_batch ingests all items in one call; retain_async=False waits
-        # for the extraction pipeline to finish so a subsequent recall sees
-        # the memories.
+        # retain_batch ingests items in one call; Hindsight server then runs
+        # LLM extraction per item. To keep any single HTTP request under the
+        # aiohttp 60s default timeout we split into chunks of 8 items.
         payload: list[dict[str, Any]] = [
             {"content": i["text"], "document_id": str(i["id"])} for i in items
         ]
-        c.retain_batch(bank_id=self._bank_id, items=payload, retain_async=False)
+        chunk_size = 8
+        for i in range(0, len(payload), chunk_size):
+            self._retain_chunk(c, payload[i : i + chunk_size])
         return IngestReceipt(
             items_written=len(items),
             elapsed_seconds=time.perf_counter() - t0,
