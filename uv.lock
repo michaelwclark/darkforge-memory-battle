@@ -428,6 +428,7 @@ dependencies = [
     { name = "chromadb" },
     { name = "hindsight-client" },
     { name = "httpx" },
+    { name = "letta-client" },
     { name = "mem0ai" },
     { name = "ollama" },
     { name = "openai" },
@@ -448,6 +449,7 @@ requires-dist = [
     { name = "chromadb", specifier = ">=0.5.20" },
     { name = "hindsight-client", specifier = ">=0.5.3" },
     { name = "httpx", specifier = ">=0.27.0" },
+    { name = "letta-client", specifier = ">=1.10.3" },
     { name = "mem0ai", specifier = ">=2.0.0" },
     { name = "ollama", specifier = ">=0.4.0" },
     { name = "openai", specifier = ">=1.50.0" },
@@ -1020,6 +1022,23 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/2c/8f/85bf51ad4150f64e8c665daf0d9dfe9787ae92005efb9a4d1cba592bd79d/kubernetes-35.0.0.tar.gz", hash = "sha256:3d00d344944239821458b9efd484d6df9f011da367ecb155dadf9513f05f09ee", size = 1094642, upload-time = "2026-01-16T01:05:27.76Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0c/70/05b685ea2dffcb2adbf3cdcea5d8865b7bc66f67249084cf845012a0ff13/kubernetes-35.0.0-py2.py3-none-any.whl", hash = "sha256:39e2b33b46e5834ef6c3985ebfe2047ab39135d41de51ce7641a7ca5b372a13d", size = 2017602, upload-time = "2026-01-16T01:05:25.991Z" },
+]
+
+[[package]]
+name = "letta-client"
+version = "1.10.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cf/bc/caa05623a97875e87fa75feec9050704c40edd374c22c88a7f6b909f2e7f/letta_client-1.10.3.tar.gz", hash = "sha256:26142e686a79cb0d645d245202aaa6889ff45aa1f52009bf10b73ca649649825", size = 284091, upload-time = "2026-04-17T23:51:00.345Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/12/82/02cb2b0e02c62dffe766b9cdaadd01010902ebf5b6c532ada301900d97e3/letta_client-1.10.3-py3-none-any.whl", hash = "sha256:dfac473a684e3d0a74bdc0faa6b5118c3b283a2fcfa27fbef2eaf8de00d42d5d", size = 408582, upload-time = "2026-04-17T23:50:58.561Z" },
 ]
 
 [[package]]
