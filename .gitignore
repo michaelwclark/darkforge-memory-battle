@@ -24,6 +24,9 @@ wheels/
 # Runtime state and contestant persistence
 data/
 
+# Run logs (large, regenerated per run; JSON in results/ is the citeable source)
+logs/
+
 # OS
 .DS_Store
 Thumbs.db
