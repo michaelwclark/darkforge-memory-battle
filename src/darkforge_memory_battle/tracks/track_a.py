@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from ..contestants.base import Contestant
 from ..datasets.longmemeval import LmeItem
 from ..judge import CONFIG as JUDGE_CFG
-from ..judge import answer, prompt_versions, score
+from ..judge import answer, is_battle_eligible, judge_roles, prompt_versions, score
 from .sanity import TrackResult, _pct, _stack_info_for  # reuse helpers
 
 
@@ -120,10 +120,7 @@ def run_track_a(
         judge_provider=JUDGE_CFG.provider,
         judge_model=JUDGE_CFG.model,
         judge_temperature=JUDGE_CFG.temperature,
-        battle_eligible=(
-            JUDGE_CFG.model in ("claude-sonnet-4-6", "anthropic/claude-sonnet-4.6")
-            and JUDGE_CFG.provider in ("anthropic", "claude_cli", "openrouter")
-        ),
+        battle_eligible=is_battle_eligible(),
         prompt_versions=prompt_versions(),
         top_k=top_k,
         num_questions=len(rows),
@@ -140,4 +137,5 @@ def run_track_a(
         stack_info=_stack_info_for(contestant),
         recall_at_k_mean=(statistics.fmean(recalls) if recalls else 0.0),
         recall_at_k_scores=recalls,
+        judge_roles=judge_roles(),
     )

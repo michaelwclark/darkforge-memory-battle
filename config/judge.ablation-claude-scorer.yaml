@@ -1,0 +1,28 @@
+# Ablation config: ANSWER = Ollama, SCORE = Claude Sonnet 4.6 (OpenRouter).
+# Isolates the "generator" effect by running a cheap local generator and
+# having the SOW-pinned judge grade the result.
+#
+# Result: battle_eligible=false (mixed pair). Paired with judge.yaml (Ollama
+# unified) this gives the pure "generator swap" delta with the scorer held
+# constant at Claude Sonnet 4.6.
+
+judge:
+  provider: ollama
+  model: qwen2.5:14b-instruct
+  temperature: 0.0
+  max_tokens: 1024
+  system_prompt_version: "v1"
+  rubric_version: "v2"
+
+  answer:
+    provider: ollama
+    model: qwen2.5:14b-instruct
+
+  score:
+    provider: openrouter
+    model: anthropic/claude-sonnet-4.6
+
+embedding:
+  provider: "ollama"
+  model: "nomic-embed-text:latest"
+  dimensions: 768

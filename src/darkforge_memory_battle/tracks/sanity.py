@@ -14,8 +14,9 @@ from datetime import datetime, timezone
 
 from ..contestants.base import Contestant
 from ..datasets.sanity import SANITY_SET, to_ingest_items
+from ..judge import ANSWER_CFG, SCORE_CFG
 from ..judge import CONFIG as JUDGE_CFG
-from ..judge import answer, prompt_versions, score
+from ..judge import answer, is_battle_eligible, judge_roles, prompt_versions, score
 
 
 @dataclass
@@ -60,6 +61,12 @@ class TrackResult:
     stack_info: dict | None = None
     recall_at_k_mean: float | None = None
     recall_at_k_scores: list[float] | None = None
+    # Per-role judge provenance. When the harness is in unified-judge mode,
+    # this mirrors (judge_provider, judge_model) across both roles. When the
+    # answer() and score() configs differ (ablation runs), the split is
+    # recorded here. Existing code that reads judge_provider/judge_model
+    # still works \u2014 those fields reflect the SCORE role.
+    judge_roles: dict | None = None
 
 
 def _stack_info_for(contestant) -> dict | None:
@@ -121,10 +128,7 @@ def run_sanity(contestant: Contestant, top_k: int = 5) -> TrackResult:
         judge_provider=JUDGE_CFG.provider,
         judge_model=JUDGE_CFG.model,
         judge_temperature=JUDGE_CFG.temperature,
-        battle_eligible=(
-            JUDGE_CFG.model in ("claude-sonnet-4-6", "anthropic/claude-sonnet-4.6")
-            and JUDGE_CFG.provider in ("anthropic", "claude_cli", "openrouter")
-        ),
+        battle_eligible=is_battle_eligible(),
         prompt_versions=prompt_versions(),
         top_k=top_k,
         num_questions=len(SANITY_SET),
@@ -139,6 +143,7 @@ def run_sanity(contestant: Contestant, top_k: int = 5) -> TrackResult:
         total_output_tokens=tot_out,
         rows=[asdict(r) for r in rows],
         stack_info=_stack_info_for(contestant),
+        judge_roles=judge_roles(),
     )
 
 

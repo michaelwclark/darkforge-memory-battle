@@ -1,0 +1,32 @@
+# Ablation config: ANSWER = Claude Sonnet 4.6 (OpenRouter), SCORE = Ollama.
+# Isolates the "scorer" effect by pinning the generator to the SOW-pinned
+# model across all contestants and swapping only the scorer.
+#
+# Result: battle_eligible=false (mixed pair). Used for the isolated-judge
+# decomposition in Article 1 \u00a73 \u2014 paired with judge.battle.yaml gives the
+# pure "scorer swap" delta with generator held constant.
+
+judge:
+  # Top-level block is used by any role that doesn't override. Sensible
+  # defaults for max_tokens + prompt versions so we don't have to repeat.
+  provider: openrouter
+  model: anthropic/claude-sonnet-4.6
+  temperature: 0.0
+  max_tokens: 1024
+  system_prompt_version: "v1"
+  rubric_version: "v2"
+
+  answer:
+    # Pinned to SOW generator via OpenRouter.
+    provider: openrouter
+    model: anthropic/claude-sonnet-4.6
+
+  score:
+    # Cheap local scorer.
+    provider: ollama
+    model: qwen2.5:14b-instruct
+
+embedding:
+  provider: "ollama"
+  model: "nomic-embed-text:latest"
+  dimensions: 768

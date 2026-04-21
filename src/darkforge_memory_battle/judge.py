@@ -46,20 +46,42 @@ class JudgeConfig:
     rubric_version: str
 
 
-def _load_config() -> JudgeConfig:
-    with CONFIG_PATH.open() as f:
-        cfg = yaml.safe_load(f)["judge"]
+def _build_config(base: dict, overrides: dict | None = None) -> JudgeConfig:
+    """Merge a role-specific override block over the shared judge: defaults."""
+    merged = {**base, **(overrides or {})}
     return JudgeConfig(
-        provider=cfg.get("provider", "anthropic"),
-        model=cfg["model"],
-        temperature=float(cfg["temperature"]),
-        max_tokens=int(cfg["max_tokens"]),
-        system_prompt_version=cfg["system_prompt_version"],
-        rubric_version=cfg["rubric_version"],
+        provider=merged.get("provider", "anthropic"),
+        model=merged["model"],
+        temperature=float(merged["temperature"]),
+        max_tokens=int(merged["max_tokens"]),
+        system_prompt_version=merged["system_prompt_version"],
+        rubric_version=merged["rubric_version"],
     )
 
 
-CONFIG = _load_config()
+def _load_configs() -> tuple[JudgeConfig, JudgeConfig]:
+    """Load answer + score configs.
+
+    A single `judge:` block in the yaml covers both roles (unified judge,
+    the SOW default). Optional `judge.answer:` and `judge.score:` blocks
+    override the shared defaults per role. This lets us pin the generator
+    (answer) to one model while swapping the scorer (score) independently
+    for judge-sensitivity ablations.
+    """
+    with CONFIG_PATH.open() as f:
+        cfg = yaml.safe_load(f)["judge"]
+    # Shared defaults = cfg minus the role-override keys.
+    shared = {k: v for k, v in cfg.items() if k not in ("answer", "score")}
+    answer_cfg = _build_config(shared, cfg.get("answer"))
+    score_cfg = _build_config(shared, cfg.get("score"))
+    return answer_cfg, score_cfg
+
+
+ANSWER_CFG, SCORE_CFG = _load_configs()
+# Back-compat alias. Most existing code assumed one config; keep pointing at
+# the scorer (the canonical "judge" in benchmark parlance). New code should
+# prefer ANSWER_CFG / SCORE_CFG explicitly.
+CONFIG = SCORE_CFG
 
 
 ANSWER_SYSTEM_V1 = """You are an evaluation subject, not an assistant.
@@ -271,15 +293,16 @@ def _claude_cli_call(system: str, user: str, model: str, max_tokens: int) -> tup
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10))
 def answer(context: str, question: str) -> AnswerResult:
+    cfg = ANSWER_CFG
     user_msg = (
         f"<retrieved_context>\n{context}\n</retrieved_context>\n\n"
         f"<question>\n{question}\n</question>"
     )
-    if CONFIG.provider == "anthropic":
+    if cfg.provider == "anthropic":
         msg = _get_anthropic().messages.create(
-            model=CONFIG.model,
-            max_tokens=CONFIG.max_tokens,
-            temperature=CONFIG.temperature,
+            model=cfg.model,
+            max_tokens=cfg.max_tokens,
+            temperature=cfg.temperature,
             system=ANSWER_SYSTEM_V1,
             messages=[{"role": "user", "content": user_msg}],
         )
@@ -288,11 +311,11 @@ def answer(context: str, question: str) -> AnswerResult:
             input_tokens=msg.usage.input_tokens,
             output_tokens=msg.usage.output_tokens,
         )
-    if CONFIG.provider == "openai":
+    if cfg.provider == "openai":
         resp = _get_openai().chat.completions.create(
-            model=CONFIG.model,
-            temperature=CONFIG.temperature,
-            max_tokens=CONFIG.max_tokens,
+            model=cfg.model,
+            temperature=cfg.temperature,
+            max_tokens=cfg.max_tokens,
             messages=[
                 {"role": "system", "content": ANSWER_SYSTEM_V1},
                 {"role": "user", "content": user_msg},
@@ -304,22 +327,22 @@ def answer(context: str, question: str) -> AnswerResult:
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
         )
-    if CONFIG.provider == "claude_cli":
+    if cfg.provider == "claude_cli":
         text, in_t, out_t = _claude_cli_call(
             system=ANSWER_SYSTEM_V1,
             user=user_msg,
-            model=CONFIG.model,
-            max_tokens=CONFIG.max_tokens,
+            model=cfg.model,
+            max_tokens=cfg.max_tokens,
         )
         return AnswerResult(text=text.strip(), input_tokens=in_t, output_tokens=out_t)
-    if CONFIG.provider == "ollama":
+    if cfg.provider == "ollama":
         resp = _get_ollama().chat(
-            model=CONFIG.model,
+            model=cfg.model,
             messages=[
                 {"role": "system", "content": ANSWER_SYSTEM_V1},
                 {"role": "user", "content": user_msg},
             ],
-            options={"temperature": CONFIG.temperature, "num_predict": CONFIG.max_tokens},
+            options={"temperature": cfg.temperature, "num_predict": cfg.max_tokens},
         )
         text = (resp.get("message", {}) or {}).get("content", "") if isinstance(resp, dict) else resp.message.content
         return AnswerResult(
@@ -327,11 +350,11 @@ def answer(context: str, question: str) -> AnswerResult:
             input_tokens=int(getattr(resp, "prompt_eval_count", 0) or (resp.get("prompt_eval_count", 0) if isinstance(resp, dict) else 0)),
             output_tokens=int(getattr(resp, "eval_count", 0) or (resp.get("eval_count", 0) if isinstance(resp, dict) else 0)),
         )
-    if CONFIG.provider == "openrouter":
+    if cfg.provider == "openrouter":
         resp = _get_openrouter().chat.completions.create(
-            model=CONFIG.model,
-            temperature=CONFIG.temperature,
-            max_tokens=CONFIG.max_tokens,
+            model=cfg.model,
+            temperature=cfg.temperature,
+            max_tokens=cfg.max_tokens,
             messages=[
                 {"role": "system", "content": ANSWER_SYSTEM_V1},
                 {"role": "user", "content": user_msg},
@@ -343,22 +366,23 @@ def answer(context: str, question: str) -> AnswerResult:
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
         )
-    raise ValueError(f"unknown judge provider: {CONFIG.provider}")
+    raise ValueError(f"unknown answer provider: {cfg.provider}")
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=1, max=10))
 def score(question: str, gold: str, candidate: str) -> ScoreResult:
+    cfg = SCORE_CFG
     prompt = (
         f"<question>\n{question}\n</question>\n\n"
         f"<gold_answer>\n{gold}\n</gold_answer>\n\n"
         f"<candidate_answer>\n{candidate}\n</candidate_answer>"
     )
-    if CONFIG.provider == "anthropic":
+    if cfg.provider == "anthropic":
         msg = _get_anthropic().messages.create(
-            model=CONFIG.model,
+            model=cfg.model,
             max_tokens=256,
-            temperature=CONFIG.temperature,
-            system=_score_system_for(CONFIG.rubric_version),
+            temperature=cfg.temperature,
+            system=_score_system_for(cfg.rubric_version),
             messages=[{"role": "user", "content": prompt}],
         )
         raw = "".join(b.text for b in msg.content if b.type == "text").strip()
@@ -369,14 +393,14 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             input_tokens=msg.usage.input_tokens,
             output_tokens=msg.usage.output_tokens,
         )
-    if CONFIG.provider == "openai":
+    if cfg.provider == "openai":
         resp = _get_openai().chat.completions.create(
-            model=CONFIG.model,
-            temperature=CONFIG.temperature,
+            model=cfg.model,
+            temperature=cfg.temperature,
             max_tokens=256,
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": _score_system_for(CONFIG.rubric_version)},
+                {"role": "system", "content": _score_system_for(cfg.rubric_version)},
                 {"role": "user", "content": prompt},
             ],
         )
@@ -389,11 +413,11 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
         )
-    if CONFIG.provider == "claude_cli":
+    if cfg.provider == "claude_cli":
         text, in_t, out_t = _claude_cli_call(
-            system=_score_system_for(CONFIG.rubric_version),
+            system=_score_system_for(cfg.rubric_version),
             user=prompt,
-            model=CONFIG.model,
+            model=cfg.model,
             max_tokens=256,
         )
         parsed = json.loads(_strip_code_fence(text))
@@ -403,15 +427,15 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             input_tokens=in_t,
             output_tokens=out_t,
         )
-    if CONFIG.provider == "ollama":
+    if cfg.provider == "ollama":
         resp = _get_ollama().chat(
-            model=CONFIG.model,
+            model=cfg.model,
             messages=[
-                {"role": "system", "content": _score_system_for(CONFIG.rubric_version)},
+                {"role": "system", "content": _score_system_for(cfg.rubric_version)},
                 {"role": "user", "content": prompt},
             ],
             format="json",
-            options={"temperature": CONFIG.temperature, "num_predict": 256},
+            options={"temperature": cfg.temperature, "num_predict": 256},
         )
         text = (resp.get("message", {}) or {}).get("content", "") if isinstance(resp, dict) else resp.message.content
         parsed = json.loads(_strip_code_fence(text or ""))
@@ -421,14 +445,14 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             input_tokens=int(getattr(resp, "prompt_eval_count", 0) or (resp.get("prompt_eval_count", 0) if isinstance(resp, dict) else 0)),
             output_tokens=int(getattr(resp, "eval_count", 0) or (resp.get("eval_count", 0) if isinstance(resp, dict) else 0)),
         )
-    if CONFIG.provider == "openrouter":
+    if cfg.provider == "openrouter":
         resp = _get_openrouter().chat.completions.create(
-            model=CONFIG.model,
-            temperature=CONFIG.temperature,
+            model=cfg.model,
+            temperature=cfg.temperature,
             max_tokens=256,
             response_format={"type": "json_object"},
             messages=[
-                {"role": "system", "content": _score_system_for(CONFIG.rubric_version)},
+                {"role": "system", "content": _score_system_for(cfg.rubric_version)},
                 {"role": "user", "content": prompt},
             ],
         )
@@ -441,7 +465,7 @@ def score(question: str, gold: str, candidate: str) -> ScoreResult:
             input_tokens=usage.prompt_tokens if usage else 0,
             output_tokens=usage.completion_tokens if usage else 0,
         )
-    raise ValueError(f"unknown judge provider: {CONFIG.provider}")
+    raise ValueError(f"unknown score provider: {cfg.provider}")
 
 
 def _strip_code_fence(text: str) -> str:
@@ -457,6 +481,37 @@ def _strip_code_fence(text: str) -> str:
 
 def prompt_versions() -> dict[str, str]:
     return {
-        "answer_system": CONFIG.system_prompt_version,
-        "score_system": CONFIG.rubric_version,
+        "answer_system": ANSWER_CFG.system_prompt_version,
+        "score_system": SCORE_CFG.rubric_version,
     }
+
+
+def judge_roles() -> dict[str, dict[str, str | float]]:
+    """Full per-role judge provenance for inclusion in result JSON."""
+    return {
+        "answer": {
+            "provider": ANSWER_CFG.provider,
+            "model": ANSWER_CFG.model,
+            "temperature": ANSWER_CFG.temperature,
+        },
+        "score": {
+            "provider": SCORE_CFG.provider,
+            "model": SCORE_CFG.model,
+            "temperature": SCORE_CFG.temperature,
+        },
+    }
+
+
+def is_battle_eligible() -> bool:
+    """True iff BOTH roles use a SOW-pinned judge (claude-sonnet-4-6 via
+    anthropic/claude_cli/openrouter). Ablation cells with a mixed pair
+    are deliberately not battle-eligible \u2014 they're decomposition runs.
+    """
+    pinned = {"claude-sonnet-4-6", "anthropic/claude-sonnet-4.6"}
+    ok_providers = {"anthropic", "claude_cli", "openrouter"}
+    return (
+        ANSWER_CFG.model in pinned
+        and ANSWER_CFG.provider in ok_providers
+        and SCORE_CFG.model in pinned
+        and SCORE_CFG.provider in ok_providers
+    )
