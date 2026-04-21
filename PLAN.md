@@ -92,14 +92,20 @@ should read this first to understand where things are and what's next.
 
 ## Coordination protocol for scheduled agents
 
+A systemd-user timer runs `scripts/orchestrator.py` every 30 minutes. It
+publishes completed results to `PENDING_PUBLICATIONS.md` (human/Claude picks
+those up for Notion + memory writes) and auto-advances waves when conditions
+are met. The timer survives session closes, reboots, and logouts (user
+linger is enabled on genomesbox).
+
 A resuming agent should:
 
 1. `cd ~/projects/darkforge-memory-battle && git pull --rebase` (if remotes ever added).
 2. Read this file (`cat PLAN.md`).
 3. Check for active runs: `pgrep -af 'run_track_a.py'` + `systemctl --user list-units --type=service --state=active | grep battle`.
-4. Check for new result JSONs since last publish: `ls -lt results/*.json | head`.
+4. Check for new result JSONs since last publish: `ls -lt results/*.json | head` — or just read `PENDING_PUBLICATIONS.md`.
 5. Read the latest memory entries via `memory_read "Memory Battle F057 latest status"`.
-6. Decide the next wave per the queue above.
+6. Decide the next wave per the queue above (the orchestrator will kick Waves 1–4 autonomously; Waves 5+ are human-driven).
 7. Update this file's Status section with any new data before kicking the next wave.
 8. Commit every artifact to `main` with a descriptive message prefixed `feat(…):` or `chore(…)`.
 

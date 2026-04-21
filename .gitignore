@@ -26,6 +26,11 @@ data/
 
 # Run logs (large, regenerated per run; JSON in results/ is the citeable source)
 logs/
+# Orchestrator tick logs live under logs/ too; explicit for clarity.
+logs/orchestrator_*.log
+
+# Orchestrator-driven pending-publications digest (human/Claude consumes + clears)
+PENDING_PUBLICATIONS.md
 
 # OS
 .DS_Store
