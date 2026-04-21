@@ -260,23 +260,45 @@ def _pick_next_wave(summaries: list[dict]) -> WaveSpec | None:
 
 
 def _kick_wave(wave: WaveSpec, dry_run: bool) -> str:
+    """Kick a wave via a transient systemd-user scope.
+
+    Naive `nohup setsid bash -c "... &"` from inside the orchestrator's
+    systemd oneshot service does not actually survive the service's exit
+    because the service's cgroup is torn down when its main process
+    returns (default KillMode=control-group). Putting the sweep in its
+    own transient systemd-user service moves it into a new cgroup that
+    outlives the parent service.
+    """
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    unit_name = f"battle-{wave.name}-{ts}"
     log_path = LOGS_DIR / f"{wave.name}_{ts}.log"
     LOGS_DIR.mkdir(exist_ok=True)
     contestants = " ".join(WAVE_CONTESTANTS)
-    cmd = (
+    inner = (
         f"cd {shlex.quote(str(REPO_ROOT))} && "
-        f"BATTLE_JUDGE_CONFIG={shlex.quote(wave.config)} "
-        f"nohup setsid ./scripts/run_track_a_full.sh {contestants} "
-        f"--variant oracle --n 20 "
-        f">{shlex.quote(str(log_path))} 2>&1 &"
+        f"./scripts/run_track_a_full.sh {contestants} --variant oracle --n 20 "
+        f">{shlex.quote(str(log_path))} 2>&1"
     )
+    cmd = [
+        "systemd-run",
+        "--user",
+        f"--unit={unit_name}",
+        f"--description=Memory Battle {wave.name} sweep",
+        f"--setenv=PATH=/home/genome/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        f"--setenv=BATTLE_JUDGE_CONFIG={wave.config}",
+        f"--working-directory={REPO_ROOT}",
+        "--",
+        "/bin/bash",
+        "-lc",
+        inner,
+    ]
     if dry_run:
-        logging.info("[dry-run] would kick wave %s with: %s", wave.name, cmd)
-        return cmd
-    logging.info("kicking wave %s — log=%s", wave.name, log_path)
-    subprocess.run(["bash", "-lc", cmd], check=True)
-    return cmd
+        logging.info("[dry-run] would kick wave %s as systemd unit %s", wave.name, unit_name)
+        logging.info("[dry-run] cmd: %s", " ".join(shlex.quote(c) for c in cmd))
+        return unit_name
+    logging.info("kicking wave %s as systemd unit %s — log=%s", wave.name, unit_name, log_path)
+    subprocess.run(cmd, check=True)
+    return unit_name
 
 
 def run(dry_run: bool) -> int:
