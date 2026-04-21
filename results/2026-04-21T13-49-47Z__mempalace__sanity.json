@@ -1,0 +1,190 @@
+{
+  "track": "sanity",
+  "contestant": "mempalace",
+  "contestant_role": "subject",
+  "run_started_at": "2026-04-21T13:49:31.310579+00:00",
+  "run_completed_at": "2026-04-21T13:49:47.136850+00:00",
+  "judge_provider": "ollama",
+  "judge_model": "qwen2.5:14b-instruct",
+  "judge_temperature": 0.0,
+  "battle_eligible": false,
+  "prompt_versions": {
+    "answer_system": "v1",
+    "score_system": "v2"
+  },
+  "top_k": 3,
+  "num_questions": 10,
+  "quality_mean": 1.0,
+  "quality_sd": 0.0,
+  "quality_scores": [
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0,
+    1.0
+  ],
+  "retrieve_p50_seconds": 0.11423265999474097,
+  "retrieve_p95_seconds": 0.1911253229918657,
+  "ingest_seconds": 1.4618046620016685,
+  "ingest_items": 10,
+  "total_input_tokens": 5449,
+  "total_output_tokens": 311,
+  "rows": [
+    {
+      "qa_id": "s1",
+      "question": "Who discovered penicillin?",
+      "gold": "Alexander Fleming",
+      "candidate": "Alexander Fleming",
+      "score": 1.0,
+      "score_reason": "Candidate answer correctly identifies Alexander Fleming as the discoverer of penicillin without any additional or incorrect information.",
+      "retrieve_seconds": 0.11378921699360944,
+      "answer_input_tokens": 166,
+      "answer_output_tokens": 3,
+      "score_input_tokens": 375,
+      "score_output_tokens": 35
+    },
+    {
+      "qa_id": "s2",
+      "question": "What is the capital of Australia?",
+      "gold": "Canberra",
+      "candidate": "Canberra",
+      "score": 1.0,
+      "score_reason": "Candidate answer exactly matches gold answer.",
+      "retrieve_seconds": 0.11850313800096046,
+      "answer_input_tokens": 164,
+      "answer_output_tokens": 3,
+      "score_input_tokens": 376,
+      "score_output_tokens": 21
+    },
+    {
+      "qa_id": "s3",
+      "question": "What gas do plants use for photosynthesis?",
+      "gold": "Carbon dioxide",
+      "candidate": "carbon dioxide",
+      "score": 1.0,
+      "score_reason": "The candidate answer correctly identifies carbon dioxide as the gas used by plants for photosynthesis without any additional or incorrect information.",
+      "retrieve_seconds": 0.11335194298590068,
+      "answer_input_tokens": 169,
+      "answer_output_tokens": 3,
+      "score_input_tokens": 378,
+      "score_output_tokens": 37
+    },
+    {
+      "qa_id": "s4",
+      "question": "Who wrote 'Pride and Prejudice'?",
+      "gold": "Jane Austen",
+      "candidate": "Jane Austen",
+      "score": 1.0,
+      "score_reason": "Candidate answer is identical to the gold answer.",
+      "retrieve_seconds": 0.1911253229918657,
+      "answer_input_tokens": 174,
+      "answer_output_tokens": 4,
+      "score_input_tokens": 382,
+      "score_output_tokens": 23
+    },
+    {
+      "qa_id": "s5",
+      "question": "What is the chemical symbol for gold?",
+      "gold": "Au",
+      "candidate": "Au",
+      "score": 1.0,
+      "score_reason": "Candidate answer exactly matches the gold answer.",
+      "retrieve_seconds": 0.11398576400824822,
+      "answer_input_tokens": 163,
+      "answer_output_tokens": 2,
+      "score_input_tokens": 375,
+      "score_output_tokens": 22
+    },
+    {
+      "qa_id": "s6",
+      "question": "Which planet has the Great Red Spot?",
+      "gold": "Jupiter",
+      "candidate": "Jupiter",
+      "score": 1.0,
+      "score_reason": "Candidate answer correctly identifies Jupiter as the planet with the Great Red Spot without any additional errors or omissions.",
+      "retrieve_seconds": 0.11423265999474097,
+      "answer_input_tokens": 164,
+      "answer_output_tokens": 3,
+      "score_input_tokens": 377,
+      "score_output_tokens": 35
+    },
+    {
+      "qa_id": "s7",
+      "question": "What year did the Berlin Wall fall?",
+      "gold": "1989",
+      "candidate": "1989",
+      "score": 1.0,
+      "score_reason": "Candidate answer is exactly correct without any additional or incorrect information.",
+      "retrieve_seconds": 0.11980609899910633,
+      "answer_input_tokens": 172,
+      "answer_output_tokens": 5,
+      "score_input_tokens": 381,
+      "score_output_tokens": 26
+    },
+    {
+      "qa_id": "s8",
+      "question": "Who painted 'Starry Night'?",
+      "gold": "Vincent van Gogh",
+      "candidate": "Vincent van Gogh",
+      "score": 1.0,
+      "score_reason": "Candidate answer is identical to the gold answer and contains no additional incorrect information.",
+      "retrieve_seconds": 0.11743563300115056,
+      "answer_input_tokens": 167,
+      "answer_output_tokens": 6,
+      "score_input_tokens": 383,
+      "score_output_tokens": 29
+    },
+    {
+      "qa_id": "s9",
+      "question": "What is the largest ocean on Earth?",
+      "gold": "Pacific Ocean",
+      "candidate": "The Pacific Ocean",
+      "score": 1.0,
+      "score_reason": "Candidate answer exactly matches gold answer without additional errors or omissions.",
+      "retrieve_seconds": 0.11533939400396775,
+      "answer_input_tokens": 164,
+      "answer_output_tokens": 4,
+      "score_input_tokens": 378,
+      "score_output_tokens": 27
+    },
+    {
+      "qa_id": "s10",
+      "question": "What language was primarily spoken in the Roman Empire?",
+      "gold": "Latin",
+      "candidate": "Latin",
+      "score": 1.0,
+      "score_reason": "Candidate answer exactly matches gold answer.",
+      "retrieve_seconds": 0.11282815100275911,
+      "answer_input_tokens": 164,
+      "answer_output_tokens": 2,
+      "score_input_tokens": 377,
+      "score_output_tokens": 21
+    }
+  ],
+  "stack_info": {
+    "embedder_provider": "chromadb-default",
+    "embedder_model": "sentence-transformers/all-MiniLM-L6-v2",
+    "internal_llm_provider": null,
+    "internal_llm_model": null,
+    "notes": "Embedded-Python path. Drives mempalace.convo_miner.mine_convos + mempalace.searcher.search_memories directly against a throwaway per-question palace under ./data/mempalace_battle/<bank_id>/. Core mining is regex + keyword routing, no LLM. Optional closet_llm enrichment is NOT invoked (keeps parity with the no-LLM chromadb_baseline control). Chroma default embedder (all-MiniLM-L6-v2) differs from baseline's Ollama nomic-embed."
+  },
+  "recall_at_k_mean": null,
+  "recall_at_k_scores": null,
+  "judge_roles": {
+    "answer": {
+      "provider": "ollama",
+      "model": "qwen2.5:14b-instruct",
+      "temperature": 0.0
+    },
+    "score": {
+      "provider": "ollama",
+      "model": "qwen2.5:14b-instruct",
+      "temperature": 0.0
+    }
+  }
+}

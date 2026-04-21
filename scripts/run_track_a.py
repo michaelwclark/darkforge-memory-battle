@@ -27,6 +27,10 @@ def _build_contestant(name: str):
         from darkforge_memory_battle.contestants.mem0 import Mem0Contestant
 
         return Mem0Contestant(bank_id="battle-track-a")
+    if name == "mempalace":
+        from darkforge_memory_battle.contestants.mempalace import MemPalaceContestant
+
+        return MemPalaceContestant(bank_id="battle-track-a")
     raise ValueError(f"unknown contestant: {name}")
 
 
