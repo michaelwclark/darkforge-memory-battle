@@ -346,24 +346,30 @@ def run(dry_run: bool) -> int:
         counts,
         RUNS_PER_CELL,
     )
-    # The active wave is the one with <3 per contestant. We only kick when
-    # the PREVIOUS wave has >=3 across the board AND the active wave has 0
-    # results. Kicking mid-wave would duplicate work the human already ran.
+    # Re-kick logic: if the active wave has any contestant under the threshold
+    # AND no sweep is currently running (checked earlier with pgrep), re-kick.
+    # Previously the orchestrator refused to re-kick once any cells landed,
+    # which bricked multi-pass waves — wave2a would get n=1 from a partial
+    # orchestrator-kicked run and then never advance to n=3.
     prior_waves = WAVES[: WAVES.index(next_wave)]
     prior_complete = all(
         _wave_complete(_wave_completeness(w, summaries)) for w in prior_waves
     )
-    active_has_results = any(v > 0 for v in counts.values())
     if not prior_complete:
         logging.info("prior waves not yet complete — orchestrator waits")
         return 0
-    if active_has_results:
+
+    # At this point: no sweep is running (checked at top of main), the active
+    # wave is incomplete, and all priors are complete. Kick to close the gap.
+    # The kick runs the full 3-contestant list; extras beyond threshold
+    # contribute to variance rather than waste.
+    if any(v > 0 for v in counts.values()):
         logging.info(
-            "wave %s already in progress (counts=%s); not re-kicking",
+            "wave %s partially complete (counts=%s, threshold=%d) — kicking another pass",
             next_wave.name,
             counts,
+            RUNS_PER_CELL,
         )
-        return 0
 
     cmd = _kick_wave(next_wave, dry_run)
     kick_line = (
