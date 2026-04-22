@@ -1,0 +1,118 @@
+{
+  "track": "track_a_oracle",
+  "contestant": "chromadb_baseline",
+  "contestant_role": "control",
+  "run_started_at": "2026-04-21T13:25:06.841607+00:00",
+  "run_completed_at": "2026-04-21T13:25:15.349392+00:00",
+  "judge_provider": "ollama",
+  "judge_model": "qwen2.5:14b-instruct",
+  "judge_temperature": 0.0,
+  "battle_eligible": false,
+  "prompt_versions": {
+    "answer_system": "v1",
+    "score_system": "v2"
+  },
+  "top_k": 20,
+  "num_questions": 1,
+  "quality_mean": 1.0,
+  "quality_sd": 0.0,
+  "quality_scores": [
+    1.0
+  ],
+  "retrieve_p50_seconds": 0.021247602009680122,
+  "retrieve_p95_seconds": 0.021247602009680122,
+  "ingest_seconds": 0.9467222189996392,
+  "ingest_items": 24,
+  "total_input_tokens": 5298,
+  "total_output_tokens": 41,
+  "rows": [
+    {
+      "qid": "6aeb4375_abs",
+      "qtype": "knowledge-update",
+      "question": "How many Italian restaurants have I tried in my city?",
+      "gold": "The information provided is not enough. You mentioned trying Korean restaurants but not Italian restaurants.",
+      "candidate": "NOT_IN_CONTEXT",
+      "score": 1.0,
+      "score_reason": "Candidate correctly indicates NOT_IN_CONTEXT as no specific number can be derived from the given information.",
+      "ingest_items": 24,
+      "ingest_seconds": 0.9467222189996392,
+      "retrieve_seconds": 0.021247602009680122,
+      "answer_input_tokens": 4903,
+      "answer_output_tokens": 9,
+      "score_input_tokens": 395,
+      "score_output_tokens": 32,
+      "retrieved_ids": [
+        "6aeb4375_abs__s1__t2",
+        "6aeb4375_abs__s1__t3",
+        "6aeb4375_abs__s0__t8",
+        "6aeb4375_abs__s0__t9",
+        "6aeb4375_abs__s0__t10",
+        "6aeb4375_abs__s0__t2",
+        "6aeb4375_abs__s0__t11",
+        "6aeb4375_abs__s1__t11",
+        "6aeb4375_abs__s1__t10",
+        "6aeb4375_abs__s0__t3",
+        "6aeb4375_abs__s0__t6",
+        "6aeb4375_abs__s0__t1",
+        "6aeb4375_abs__s0__t0",
+        "6aeb4375_abs__s1__t4",
+        "6aeb4375_abs__s0__t7",
+        "6aeb4375_abs__s1__t5",
+        "6aeb4375_abs__s1__t8",
+        "6aeb4375_abs__s1__t1",
+        "6aeb4375_abs__s1__t6",
+        "6aeb4375_abs__s1__t0"
+      ],
+      "retrieved_session_ids": [
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_2",
+        "answer_3f9693b7_abs_2"
+      ],
+      "recall_at_k": 1.0,
+      "answer_session_ids": [
+        "answer_3f9693b7_abs_1",
+        "answer_3f9693b7_abs_2"
+      ]
+    }
+  ],
+  "stack_info": {
+    "embedder_provider": "ollama",
+    "embedder_model": "nomic-embed-text:latest",
+    "internal_llm_provider": null,
+    "internal_llm_model": null,
+    "notes": "Bare vector store, no reranking, no LLM in the ingest or recall path."
+  },
+  "recall_at_k_mean": 1.0,
+  "recall_at_k_scores": [
+    1.0
+  ],
+  "judge_roles": {
+    "answer": {
+      "provider": "openrouter",
+      "model": "anthropic/claude-sonnet-4.6",
+      "temperature": 0.0
+    },
+    "score": {
+      "provider": "ollama",
+      "model": "qwen2.5:14b-instruct",
+      "temperature": 0.0
+    }
+  }
+}

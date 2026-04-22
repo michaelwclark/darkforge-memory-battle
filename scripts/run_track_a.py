@@ -30,7 +30,14 @@ def _build_contestant(name: str):
     if name == "mempalace":
         from darkforge_memory_battle.contestants.mempalace import MemPalaceContestant
 
-        return MemPalaceContestant(bank_id="battle-track-a")
+        import os
+
+        # Allow parallel sweeps against different per-sweep data dirs. MemPalace
+        # stores state under data/mempalace_battle/<bank_id>/; if two sweeps
+        # share a bank_id they race ChromaDB's SQLite and both crash with
+        # "readonly database". Set BATTLE_MEMPALACE_BANK_ID uniquely per sweep.
+        bank_id = os.environ.get("BATTLE_MEMPALACE_BANK_ID", "battle-track-a")
+        return MemPalaceContestant(bank_id=bank_id)
     raise ValueError(f"unknown contestant: {name}")
 
 
