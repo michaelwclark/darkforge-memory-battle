@@ -1,0 +1,548 @@
+{
+  "generated_at": "2026-04-23T19:20:09.851401Z",
+  "matrix": {
+    "chromadb_baseline": {
+      "Claude/Claude": {
+        "n": 3,
+        "quality_mean": 0.8042,
+        "quality_sd": 0.0358,
+        "quality_min": 0.7625,
+        "quality_max": 0.85
+      },
+      "Claude/Ollama": {
+        "n": 4,
+        "quality_mean": 0.9531,
+        "quality_sd": 0.0285,
+        "quality_min": 0.925,
+        "quality_max": 1.0
+      },
+      "Ollama/Claude": {
+        "n": 3,
+        "quality_mean": 0.65,
+        "quality_sd": 0.0,
+        "quality_min": 0.65,
+        "quality_max": 0.65
+      }
+    },
+    "hindsight": {
+      "Claude/Claude": {
+        "n": 3,
+        "quality_mean": 0.7708,
+        "quality_sd": 0.0156,
+        "quality_min": 0.75,
+        "quality_max": 0.7875
+      },
+      "Claude/Ollama": {
+        "n": 3,
+        "quality_mean": 0.8292,
+        "quality_sd": 0.0312,
+        "quality_min": 0.7875,
+        "quality_max": 0.8625
+      },
+      "Ollama/Claude": {
+        "n": 3,
+        "quality_mean": 0.5833,
+        "quality_sd": 0.0257,
+        "quality_min": 0.55,
+        "quality_max": 0.6125
+      }
+    },
+    "mem0": {
+      "Claude/Claude": {
+        "n": 3,
+        "quality_mean": 0.7033,
+        "quality_sd": 0.0286,
+        "quality_min": 0.6675,
+        "quality_max": 0.7375
+      },
+      "Claude/Ollama": {
+        "n": 3,
+        "quality_mean": 0.775,
+        "quality_sd": 0.0102,
+        "quality_min": 0.7625,
+        "quality_max": 0.7875
+      },
+      "Ollama/Claude": {
+        "n": 3,
+        "quality_mean": 0.5517,
+        "quality_sd": 0.0286,
+        "quality_min": 0.5125,
+        "quality_max": 0.58
+      }
+    },
+    "mempalace": {
+      "Ollama/Ollama": {
+        "n": 4,
+        "quality_mean": 0.6333,
+        "quality_sd": 0.0289,
+        "quality_min": 0.5833,
+        "quality_max": 0.65
+      },
+      "Claude/Claude": {
+        "n": 4,
+        "quality_mean": 0.5813,
+        "quality_sd": 0.0472,
+        "quality_min": 0.5,
+        "quality_max": 0.6125
+      },
+      "Ollama/Claude": {
+        "n": 2,
+        "quality_mean": 0.5188,
+        "quality_sd": 0.0063,
+        "quality_min": 0.5125,
+        "quality_max": 0.525
+      },
+      "Claude/Ollama": {
+        "n": 3,
+        "quality_mean": 0.6458,
+        "quality_sd": 0.0059,
+        "quality_min": 0.6375,
+        "quality_max": 0.65
+      }
+    }
+  },
+  "per_category": {
+    "chromadb_baseline": {
+      "Claude/Claude": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.75,
+          "sd": 0.25
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.8333,
+          "sd": 0.2357
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.4167,
+          "sd": 0.1667
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.7778,
+          "sd": 0.4157
+        }
+      },
+      "Claude/Ollama": {
+        "knowledge-update": {
+          "n": 13,
+          "mean": 0.9615,
+          "sd": 0.0902
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.9444,
+          "sd": 0.1039
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.75,
+          "sd": 0.0
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.9444,
+          "sd": 0.1039
+        }
+      },
+      "Ollama/Claude": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.5625,
+          "sd": 0.2724
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 0.8125,
+          "sd": 0.3248
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.4714
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.5,
+          "sd": 0.0
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.3333,
+          "sd": 0.4714
+        }
+      }
+    },
+    "hindsight": {
+      "Claude/Claude": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.6875,
+          "sd": 0.2724
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 0.9167,
+          "sd": 0.2764
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.4714
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.5556,
+          "sd": 0.1039
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.7778,
+          "sd": 0.4157
+        }
+      },
+      "Claude/Ollama": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.7292,
+          "sd": 0.3881
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.4714
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.8056,
+          "sd": 0.1039
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.75,
+          "sd": 0.4082
+        }
+      },
+      "Ollama/Claude": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.625,
+          "sd": 0.2165
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 0.4375,
+          "sd": 0.4224
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.4444,
+          "sd": 0.4969
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.3611,
+          "sd": 0.2079
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.4714
+        }
+      }
+    },
+    "mem0": {
+      "Claude/Claude": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.5583,
+          "sd": 0.357
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 0.9583,
+          "sd": 0.0932
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.3118
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.4444,
+          "sd": 0.1039
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.5556,
+          "sd": 0.4969
+        }
+      },
+      "Claude/Ollama": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.6667,
+          "sd": 0.3997
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 0.9792,
+          "sd": 0.0691
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.3727
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.7222,
+          "sd": 0.275
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.5833,
+          "sd": 0.4249
+        }
+      },
+      "Ollama/Claude": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.5292,
+          "sd": 0.3178
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 0.5833,
+          "sd": 0.493
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.4167,
+          "sd": 0.4714
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.4444,
+          "sd": 0.2291
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.3333,
+          "sd": 0.4714
+        }
+      }
+    },
+    "mempalace": {
+      "Ollama/Ollama": {
+        "knowledge-update": {
+          "n": 13,
+          "mean": 0.8269,
+          "sd": 0.316
+        },
+        "multi-session": {
+          "n": 13,
+          "mean": 0.4615,
+          "sd": 0.4368
+        },
+        "single-session-assistant": {
+          "n": 10,
+          "mean": 0.375,
+          "sd": 0.422
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.5833,
+          "sd": 0.4249
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.4714
+        }
+      },
+      "Claude/Claude": {
+        "knowledge-update": {
+          "n": 16,
+          "mean": 0.5781,
+          "sd": 0.3504
+        },
+        "multi-session": {
+          "n": 16,
+          "mean": 0.5625,
+          "sd": 0.4463
+        },
+        "single-session-assistant": {
+          "n": 12,
+          "mean": 0.6667,
+          "sd": 0.4714
+        },
+        "single-session-preference": {
+          "n": 12,
+          "mean": 0.1042,
+          "sd": 0.16
+        },
+        "single-session-user": {
+          "n": 12,
+          "mean": 0.9167,
+          "sd": 0.2764
+        },
+        "temporal-reasoning": {
+          "n": 12,
+          "mean": 0.6667,
+          "sd": 0.4714
+        }
+      },
+      "Ollama/Claude": {
+        "knowledge-update": {
+          "n": 8,
+          "mean": 0.5625,
+          "sd": 0.2724
+        },
+        "multi-session": {
+          "n": 8,
+          "mean": 0.25,
+          "sd": 0.433
+        },
+        "single-session-assistant": {
+          "n": 6,
+          "mean": 0.3333,
+          "sd": 0.4714
+        },
+        "single-session-preference": {
+          "n": 6,
+          "mean": 0.375,
+          "sd": 0.2795
+        },
+        "single-session-user": {
+          "n": 6,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 6,
+          "mean": 0.6667,
+          "sd": 0.4714
+        }
+      },
+      "Claude/Ollama": {
+        "knowledge-update": {
+          "n": 12,
+          "mean": 0.6042,
+          "sd": 0.4013
+        },
+        "multi-session": {
+          "n": 12,
+          "mean": 0.6875,
+          "sd": 0.4098
+        },
+        "single-session-assistant": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.4714
+        },
+        "single-session-preference": {
+          "n": 9,
+          "mean": 0.25,
+          "sd": 0.3536
+        },
+        "single-session-user": {
+          "n": 9,
+          "mean": 1.0,
+          "sd": 0.0
+        },
+        "temporal-reasoning": {
+          "n": 9,
+          "mean": 0.6667,
+          "sd": 0.4714
+        }
+      }
+    }
+  },
+  "recall_at_k_overall": {
+    "chromadb_baseline": {
+      "n": 10,
+      "mean": 1.0
+    },
+    "hindsight": {
+      "n": 9,
+      "mean": 1.0
+    },
+    "mem0": {
+      "n": 9,
+      "mean": 1.0
+    },
+    "mempalace": {
+      "n": 13,
+      "mean": 1.0
+    }
+  }
+}
