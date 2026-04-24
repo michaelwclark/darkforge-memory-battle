@@ -429,7 +429,7 @@ def _call_llm_proposer(prompt: str, model: str = "anthropic/claude-sonnet-4.6") 
         base_url="https://openrouter.ai/api/v1",
         default_headers={
             "HTTP-Referer": "https://github.com/michaelwclark/darkforge-memory-battle",
-            "X-Title": "Memory Battle (Dark Forge) — autoresearch",
+            "X-Title": "Memory Battle (Dark Forge) - autoresearch",
         },
     )
     resp = client.chat.completions.create(
