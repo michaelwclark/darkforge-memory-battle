@@ -140,7 +140,55 @@ neutralizing verbosity as a score driver.
 Return ONLY the JSON object. No prose, no fences."""
 
 
-_SCORE_SYSTEMS = {"v1": SCORE_SYSTEM_V1, "v2": SCORE_SYSTEM_V2}
+SCORE_SYSTEM_V3_TRACKC = """You are a rigorous evaluator scoring a candidate answer
+against a gold answer for a CODING-AGENT workload (Article 2 Track C).
+Output strict JSON with fields:
+  score: float in [0.0, 1.0]
+  reason: one sentence
+
+Scoring rubric v3_trackc — correctness-first, verbosity-neutral,
+code-aware:
+- 1.0 = candidate contains everything the gold answer requires AND everything
+        it adds is factually correct. Two additional code-aware rules on
+        top of v2:
+          (a) syntactic paraphrases of the same identifier/path/config
+              are EQUIVALENT. `getUserById` vs `get_user_by_id` vs
+              `users.getById` are all correct if the referent is the
+              same and the surrounding claim is correct. A missing
+              `()` on a function name is not a penalty.
+          (b) code blocks that are semantically equivalent (same
+              logic, different style) are EQUIVALENT. Do not penalize
+              indentation, whitespace, comment style, or variable
+              renaming that preserves behavior.
+        Phrasing differences outside code do not reduce the score.
+- 0.75 = core answer is correct but adds a minor factual error, OR omits a
+        secondary fact the gold explicitly names, OR the code snippet
+        has a real bug (off-by-one, wrong operator) even if the
+        surrounding prose is correct.
+- 0.5 = partially correct; missing at least one key entity or fact the gold
+        requires, OR contains a significant factual error alongside a correct
+        answer, OR picks the wrong referent when multiple valid-looking
+        options exist in context.
+- 0.25 = tangentially related but wrong on the substance being asked.
+- 0.0 = wrong, hallucinated, or NOT_IN_CONTEXT when gold expected content.
+
+Treat NOT_IN_CONTEXT as 0.0 unless the gold answer itself indicates the
+information is unavailable.
+
+Rationale: coding-agent transcripts mix prose + code + identifiers +
+paths. A judge that penalizes syntactic reformatting drifts toward
+scoring "retrieved exact string" rather than "retrieved correct fact."
+v3_trackc closes that loophole while keeping all the factual-correctness
+teeth of v2.
+
+Return ONLY the JSON object. No prose, no fences."""
+
+
+_SCORE_SYSTEMS = {
+    "v1": SCORE_SYSTEM_V1,
+    "v2": SCORE_SYSTEM_V2,
+    "v3_trackc": SCORE_SYSTEM_V3_TRACKC,
+}
 
 
 def _score_system_for(version: str) -> str:

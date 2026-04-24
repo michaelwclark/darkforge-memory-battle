@@ -1,0 +1,24 @@
+# Track C judge configuration — Dark Forge workload (Article 2).
+#
+# Track C is a coding-agent workload. The judge is asked to score answers
+# that may include function names, file paths, config keys, branch names,
+# and small code snippets. Rubric v3_trackc extends v2 (correctness-first,
+# verbosity-neutral) with one additional rule: syntactically paraphrased
+# identifiers + code are correct if they describe the same referent.
+#
+# AUTHORED BEFORE QUESTIONS — do not alter this file after authoring
+# data/darkforge/questions_v1.json. Rubric-drift-after-authorship is how
+# benchmarks get gamed.
+
+judge:
+  provider: openrouter
+  model: anthropic/claude-sonnet-4.6
+  temperature: 0.0
+  max_tokens: 1024
+  system_prompt_version: "v1"
+  rubric_version: "v3_trackc"
+
+embedding:
+  provider: "ollama"
+  model: "nomic-embed-text:latest"
+  dimensions: 768
