@@ -476,7 +476,13 @@ def _build_proposer_prompt(
     )
 
 
-def _call_llm_proposer(prompt: str, model: str = "anthropic/claude-sonnet-4.6") -> dict:
+def _call_llm_proposer(
+    prompt: str,
+    model: str = "anthropic/claude-sonnet-4.6",
+    max_attempts: int = 3,
+) -> dict:
+    """Proposer with retry. Returns {} if all attempts yield empty/invalid JSON
+    so the outer loop can skip this iteration instead of crashing."""
     from openai import OpenAI
 
     key = os.environ.get("OPENROUTER_API_KEY")
@@ -490,20 +496,45 @@ def _call_llm_proposer(prompt: str, model: str = "anthropic/claude-sonnet-4.6") 
             "X-Title": "Memory Battle (Dark Forge) - autoresearch",
         },
     )
-    resp = client.chat.completions.create(
-        model=model,
-        temperature=0.7,
-        max_tokens=1024,
-        response_format={"type": "json_object"},
-        messages=[
-            {"role": "system", "content": PROPOSER_SYSTEM},
-            {"role": "user", "content": prompt},
-        ],
-    )
-    raw = (resp.choices[0].message.content or "").strip()
-    parsed = json.loads(raw)
-    # usage billed to OPENROUTER_API_KEY; not counted in spend cap (tiny).
-    return parsed
+    last_err: Exception | None = None
+    for attempt in range(1, max_attempts + 1):
+        try:
+            resp = client.chat.completions.create(
+                model=model,
+                temperature=0.7,
+                max_tokens=1024,
+                response_format={"type": "json_object"},
+                messages=[
+                    {"role": "system", "content": PROPOSER_SYSTEM},
+                    {"role": "user", "content": prompt},
+                ],
+            )
+            raw = (resp.choices[0].message.content or "").strip()
+            if not raw:
+                raise RuntimeError(
+                    f"empty proposer response on attempt {attempt}: "
+                    f"finish_reason={getattr(resp.choices[0], 'finish_reason', '?')}"
+                )
+            # Some providers wrap JSON in a ```json fence; strip defensively.
+            if raw.startswith("```"):
+                raw = raw.split("```", 2)[1]
+                if raw.startswith("json"):
+                    raw = raw[4:]
+                raw = raw.rsplit("```", 1)[0].strip()
+            parsed = json.loads(raw)
+            return parsed
+        except Exception as e:  # noqa: BLE001 — propagate as last_err
+            last_err = e
+            logging.warning(
+                "proposer attempt %d/%d failed: %s",
+                attempt,
+                max_attempts,
+                str(e)[:200],
+            )
+            # Short backoff so a transient OpenRouter hiccup clears.
+            time.sleep(1.5 * attempt)
+    logging.error("proposer exhausted %d attempts: %s", max_attempts, last_err)
+    return {}
 
 
 def _apply_patch(accepted_knobs: dict, patch: dict) -> dict:
@@ -692,12 +723,24 @@ def main(argv: list[str] | None = None) -> int:
         try:
             proposal = _call_llm_proposer(prompt, model=args.proposer_model)
         except Exception as e:
-            logging.exception("proposer LLM call failed: %s", e)
+            logging.exception("proposer LLM call crashed: %s", e)
             break
 
         patch = proposal.get("patch") or {}
         reasoning = proposal.get("reasoning", "")
         rationale = proposal.get("rationale", "")
+
+        # Proposer bailed or returned an empty patch — skip this iteration
+        # (don't burn a rep budget re-running the current baseline) and try
+        # again next iteration.
+        if not patch:
+            logging.warning(
+                "proposer returned empty patch (proposal=%s); skipping this iteration",
+                str(proposal)[:120],
+            )
+            n_experiments_so_far += 1  # count it so we don't infinite-loop
+            continue
+
         logging.info("proposal: reasoning=%s", (reasoning or "")[:200])
         logging.info("proposal: patch=%s", json.dumps(patch))
 
