@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-23T19:20:09.851401Z",
+  "generated_at": "2026-04-24T02:35:28.119132Z",
   "matrix": {
     "chromadb_baseline": {
       "Claude/Claude": {
@@ -86,9 +86,9 @@
         "quality_max": 0.6125
       },
       "Ollama/Claude": {
-        "n": 2,
-        "quality_mean": 0.5188,
-        "quality_sd": 0.0063,
+        "n": 3,
+        "quality_mean": 0.5208,
+        "quality_sd": 0.0059,
         "quality_min": 0.5125,
         "quality_max": 0.525
       },
@@ -463,32 +463,32 @@
       },
       "Ollama/Claude": {
         "knowledge-update": {
-          "n": 8,
+          "n": 12,
           "mean": 0.5625,
           "sd": 0.2724
         },
         "multi-session": {
-          "n": 8,
+          "n": 12,
           "mean": 0.25,
           "sd": 0.433
         },
         "single-session-assistant": {
-          "n": 6,
+          "n": 9,
           "mean": 0.3333,
           "sd": 0.4714
         },
         "single-session-preference": {
-          "n": 6,
-          "mean": 0.375,
-          "sd": 0.2795
+          "n": 9,
+          "mean": 0.3889,
+          "sd": 0.2913
         },
         "single-session-user": {
-          "n": 6,
+          "n": 9,
           "mean": 1.0,
           "sd": 0.0
         },
         "temporal-reasoning": {
-          "n": 6,
+          "n": 9,
           "mean": 0.6667,
           "sd": 0.4714
         }
@@ -541,7 +541,7 @@
       "mean": 1.0
     },
     "mempalace": {
-      "n": 13,
+      "n": 14,
       "mean": 1.0
     }
   }
