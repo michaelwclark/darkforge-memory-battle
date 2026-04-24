@@ -16,6 +16,7 @@ dependencies = [
     "hindsight-client>=0.5.3",
     "mem0ai>=2.0.0",
     "letta-client>=1.10.3",
+    "mempalace>=3.3.1",
 ]
 
 [project.optional-dependencies]

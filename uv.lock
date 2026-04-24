@@ -430,6 +430,7 @@ dependencies = [
     { name = "httpx" },
     { name = "letta-client" },
     { name = "mem0ai" },
+    { name = "mempalace" },
     { name = "ollama" },
     { name = "openai" },
     { name = "pydantic" },
@@ -451,6 +452,7 @@ requires-dist = [
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "letta-client", specifier = ">=1.10.3" },
     { name = "mem0ai", specifier = ">=2.0.0" },
+    { name = "mempalace", specifier = ">=3.3.1" },
     { name = "ollama", specifier = ">=0.4.0" },
     { name = "openai", specifier = ">=1.50.0" },
     { name = "pydantic", specifier = ">=2.9.0" },
@@ -1078,6 +1080,19 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a8/41/4b786308d595ff5dc958b9916c0a5ae19af6337c7c09c4f22075400440d5/mem0ai-2.0.0.tar.gz", hash = "sha256:69a029d6e36d6f9cd30a3f2baab68b8e94e984ee91737ed5b6d78bc61df41cd8", size = 210776, upload-time = "2026-04-16T11:51:02.135Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ff/83/433c9e433aa8eede63bc1538bf97a43af3b6eb9cd4cd78ae53dcd484b5e4/mem0ai-2.0.0-py3-none-any.whl", hash = "sha256:77b185d9a490358e806497c42164ab2464109ff44fde10e5fc834996b0011649", size = 298513, upload-time = "2026-04-16T11:51:00.233Z" },
+]
+
+[[package]]
+name = "mempalace"
+version = "3.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "chromadb" },
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/25/5c/1c627cb8973eec2785034bd6551391017d031af7352c1b14d9f08da45d1f/mempalace-3.3.2.tar.gz", hash = "sha256:c8087814b9db2026b945660549f9458a87d8f9b9eda6587a9b52c3c03928acb8", size = 28123616, upload-time = "2026-04-21T05:10:26.339Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8c/17/b0595e8edc1d2b5d471c5ed2b9188217ae8b3de422227082815be514995d/mempalace-3.3.2-py3-none-any.whl", hash = "sha256:cb288e8028d26dfb384125baecfcf584aa2ba5a30a216ff82d9745af070d5e45", size = 213389, upload-time = "2026-04-21T05:10:14.448Z" },
 ]
 
 [[package]]

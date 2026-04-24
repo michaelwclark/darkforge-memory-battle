@@ -1,0 +1,13 @@
+{
+  "experiment_id": "exp000_baseline",
+  "description": "MemPalace locked Article-1 driver config. The starting point of the ratchet.",
+  "knobs": {
+    "extract_mode": "exchange",
+    "chunk_leading_prefix": "> ",
+    "top_k": 20,
+    "max_distance": 0.0,
+    "closet_llm_enabled": false,
+    "closet_llm_model": null,
+    "closet_llm_sample": 0
+  }
+}
