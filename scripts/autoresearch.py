@@ -242,48 +242,92 @@ def _run_one_rep(
     knobs: dict,
     exp_id: str,
     rep_idx: int,
-    items,
+    n_items: int,
+    seed: int,
     top_k: int,
     track_label: str,
     exp_dir: Path,
+    phase: str,
 ) -> dict:
-    """Run one Track A (or Track C) rep with the given knobs; persist JSON."""
-    from darkforge_memory_battle.tracks.track_a import run_track_a
+    """Run one rep as a SUBPROCESS.
 
-    started = time.perf_counter()
-    contestant = _build_tunable_contestant(knobs, exp_id=f"{exp_id}_rep{rep_idx}")
-    result = run_track_a(contestant, items, top_k=top_k, label=track_label)
+    Each rep gets its own Python process so chromadb's module-level
+    PersistentClient cache + ONNX tokenizer handles can't accumulate
+    across reps (observed failure mode: 'Too many open files (os error
+    24)' inside chromadb.utils.embedding_functions.onnx_mini_lm_l6_v2
+    after ~100 per-question palace rebuilds in one process).
+    """
+    import shlex
+    import subprocess
 
-    # Persist raw result JSON alongside the experiment folder. Keep the
-    # familiar filename shape but under results/autoresearch/... so that
-    # Article 1 integrity tests (non-recursive glob in results/) stay
-    # untouched.
-    ts = _now_ts()
-    filename = f"{ts}__{contestant.name}__{result.track}__rep{rep_idx}.json"
-    out_path = exp_dir / filename
-    payload = dataclasses.asdict(result)
-    payload["autoresearch_experiment_id"] = exp_id
-    payload["autoresearch_rep_index"] = rep_idx
-    payload["autoresearch_knobs"] = knobs
-    out_path.write_text(json.dumps(payload, indent=2))
-
-    axis = composite_from_track_result(payload)
-    axis["spend_usd"] = spend_usd_from_result(payload)
-    axis["wall_seconds"] = time.perf_counter() - started
-    axis["result_path"] = str(out_path.relative_to(REPO_ROOT))
+    rep_script = REPO_ROOT / "scripts" / "_autoresearch_rep.py"
+    cmd = [
+        "uv",
+        "run",
+        "python",
+        str(rep_script),
+        "--exp-id",
+        exp_id,
+        "--rep-idx",
+        str(rep_idx),
+        "--knobs-json",
+        json.dumps(knobs),
+        "--n-items",
+        str(n_items),
+        "--seed",
+        str(seed),
+        "--top-k",
+        str(top_k),
+        "--track-label",
+        track_label,
+        "--exp-dir",
+        str(exp_dir),
+        "--phase",
+        phase,
+    ]
+    # Inherit env so BATTLE_JUDGE_CONFIG + OPENROUTER_API_KEY reach the child.
+    env = os.environ.copy()
+    proc = subprocess.run(
+        cmd,
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"rep subprocess failed (code={proc.returncode}): "
+            f"cmd={' '.join(shlex.quote(c) for c in cmd)} "
+            f"stderr_tail={proc.stderr[-800:]}"
+        )
+    # Pull the AXIS_JSON: line out of stdout (child may also print chroma
+    # progress output).
+    axis: dict | None = None
+    for line in proc.stdout.splitlines():
+        if line.startswith("AXIS_JSON:"):
+            axis = json.loads(line[len("AXIS_JSON:") :])
+            break
+    if axis is None:
+        raise RuntimeError(
+            f"rep subprocess finished cleanly but produced no AXIS_JSON line; "
+            f"stdout_tail={proc.stdout[-400:]}"
+        )
     return axis
 
 
 def _run_experiment(
     exp_id: str,
     knobs: dict,
-    items,
+    n_items: int,
+    seed: int,
     top_k: int,
     track_label: str,
     n_reps: int,
     exp_dir: Path,
     reasoning: str,
     rationale: str,
+    phase: str,
 ) -> ExperimentRecord:
     """Run N_REPS of the given knob patch; return the aggregated record."""
     exp_dir.mkdir(parents=True, exist_ok=True)
@@ -296,10 +340,12 @@ def _run_experiment(
             knobs=knobs,
             exp_id=exp_id,
             rep_idx=i,
-            items=items,
+            n_items=n_items,
+            seed=seed,
             top_k=top_k,
             track_label=track_label,
             exp_dir=exp_dir,
+            phase=phase,
         )
         reps.append(rep_axis)
         logging.info(
@@ -569,13 +615,15 @@ def main(argv: list[str] | None = None) -> int:
         rec = _run_experiment(
             exp_id=base_exp_id,
             knobs=baseline["knobs"],
-            items=items,
+            n_items=args.n_items,
+            seed=args.seed,
             top_k=args.top_k,
             track_label=track_label,
             n_reps=args.n_reps,
             exp_dir=exp_dir,
-            reasoning="Baseline calibration run — matches the locked Article-1 MemPalace driver defaults.",
+            reasoning="Baseline calibration run - matches the locked Article-1 MemPalace driver defaults.",
             rationale="Seed the ratchet with the Article-1 configuration composite.",
+            phase=args.phase,
         )
         accepted_rec = _current_accepted(history, baseline)
         running_sd = _running_sd(history)
@@ -662,13 +710,15 @@ def main(argv: list[str] | None = None) -> int:
             rec = _run_experiment(
                 exp_id=exp_id,
                 knobs=new_knobs,
-                items=items,
+                n_items=args.n_items,
+                seed=args.seed,
                 top_k=args.top_k,
                 track_label=track_label,
                 n_reps=args.n_reps,
                 exp_dir=exp_dir,
                 reasoning=reasoning,
                 rationale=rationale,
+                phase=args.phase,
             )
         except ValueError as e:
             # Schema violation — log + continue to next proposal
