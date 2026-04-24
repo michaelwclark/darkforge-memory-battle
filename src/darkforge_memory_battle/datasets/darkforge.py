@@ -52,7 +52,7 @@ import json
 import logging
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
@@ -276,7 +276,7 @@ def build_corpus(out_path: Path = CORPUS_FILE, verbose: bool = True) -> dict:
 
     total_turns = sum(len(s["turns"]) for s in sessions)
     manifest = {
-        "generated_at": datetime.utcnow().isoformat() + "Z",
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "sessions_by_source": counts,
         "n_sessions": len(sessions),
         "n_turns": total_turns,
