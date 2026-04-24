@@ -21,6 +21,66 @@ should read this first to understand where things are and what's next.
 
 ---
 
+# ✅ PHASE A COMPLETE — 2026-04-24
+
+Article 2 autoresearch loop has landed. Scaffold committed in e4d3ce1
+(autoresearch + program.md) and 5cd49e4 (subprocess-per-rep hardening).
+
+**Winner (accepted): `exp002_867f3a`** — MemPalace tunable driver with:
+- `extract_mode: exchange` (unchanged from baseline)
+- `top_k: 30` (up from 20)
+- `closet_llm_enabled: true`, `closet_llm_model: anthropic/claude-haiku-4.5`
+- `chunk_leading_prefix: "> "` (unchanged)
+- `max_distance: 0.0` (unchanged)
+
+Mean composite 0.7688 ± 0.019 (n=3), beating baseline 0.7211 ± 0.0001 by
++0.048 on the Track A n=20 LongMemEval oracle subset. Quality mean 0.775
+vs baseline 0.65 (+19% relative).
+
+**The ratchet rejected two small wins:** exp004 (prefix="") and exp005
+(prefix="- " + top_k=40 + closet_llm) both had higher mean composite
+than exp002 but deltas inside the 1.5×SD noise floor. That's the ratchet
+working as designed — refusing cosmetic wins — and a good methodology
+note for the Article 2 draft.
+
+**Total spend: $4.04 / $8 cap.** Wall time ~6.5 hr (closet_llm-enabled
+reps ran ~30 min each due to per-closet haiku calls).
+
+**All artifacts live at `results/autoresearch/phase_a/exp*/`:**
+- `knobs.json`, `summary.json`, and per-rep `<ts>__mempalace_tuned__track_a_oracle_autoresearch__rep*.json`
+- Non-recursive glob in `tests/test_findings_integrity.py` ignores this
+  directory, so Article 1's 298 tests still pass unchanged.
+
+## Findings the loop surfaced
+
+1. **closet_llm is the dominant positive lever.** Every experiment that
+   included `closet_llm_enabled=true` with `extract_mode=exchange` beat
+   baseline. The architectural bet pays off on Track A.
+2. **`extract_mode: general` tanks quality** (−0.35 composite delta
+   when combined with closet_llm). The general_extractor's memory_type
+   tags don't help conversational-QA recall.
+3. **`max_distance: 0.5` over-prunes retrieval** (−0.27 delta). The
+   default `0.0` (no filter) wins.
+4. **top_k in [20, 30] is the sweet spot.** top_k=10 loses recall;
+   top_k=40 adds distractors without improving quality.
+
+## Phase B scaffolding also landed
+
+- `src/darkforge_memory_battle/datasets/darkforge.py` — extractor. 989
+  sessions / 51,100 turns from `~/data/claude-projects/` + losmon docs.
+  `data/darkforge/sessions.json` is gitignored.
+- `config/judge.trackc.yaml` + `SCORE_SYSTEM_V3_TRACKC` (code-aware
+  extension of v2). Rubric is AUTHORED and COMMITTED before any
+  question authoring.
+- `src/darkforge_memory_battle/tracks/track_c.py` + `scripts/run_track_c.py`.
+
+**Blocker: `data/darkforge/questions_v1.json` not yet authored.** Per the
+sealed-held-out rule, the question set drives everything downstream.
+Phase B/C/D are gated on this file landing. Next agent / Michael should
+decide: author manually, LLM-propose for curation, or delegate.
+
+---
+
 # 🔒 LOCKED DECISION — 2026-04-22
 
 Michael approved the **fast-track plan**. The 6-week SOW arc compressed into
