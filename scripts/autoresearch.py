@@ -41,6 +41,18 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
+# Load .env eagerly — we depend on OPENROUTER_API_KEY for the proposer call.
+# judge.py also loads it, but judge.py isn't imported until the first rep
+# runs. When the loop resumes from history (baseline already done) the
+# proposer fires *before* judge.py — without this, OPENROUTER_API_KEY is
+# missing on resume-kicks.
+try:
+    from dotenv import load_dotenv
+
+    load_dotenv(REPO_ROOT / ".env", override=True)
+except ImportError:
+    pass
+
 
 # Composite scoring constants — keep in sync with program.md.
 COMPOSITE_WEIGHTS = {"quality": 0.7, "latency": 0.2, "cost": 0.1}
