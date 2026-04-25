@@ -1,0 +1,61 @@
+{
+  "experiment_id": "exp001_7ab3b1",
+  "knobs": {
+    "extract_mode": "general",
+    "chunk_leading_prefix": "> ",
+    "top_k": 10,
+    "max_distance": 0.0,
+    "closet_llm_enabled": true,
+    "closet_llm_model": "anthropic/claude-haiku-4.5",
+    "closet_llm_sample": 0
+  },
+  "reps": [
+    {
+      "composite": 0.3591945424034503,
+      "quality_score": 0.1625,
+      "latency_score": 0.8685402120172512,
+      "cost_score": 0.717365,
+      "retrieve_p50_seconds": 0.26291957596549764,
+      "total_input_tokens": 55362,
+      "total_output_tokens": 1165,
+      "quality_sd_within_run": 0.3285859857023729,
+      "spend_usd": 0.183561,
+      "wall_seconds": 1762.009821628977,
+      "result_path": "results/autoresearch/phase_a/exp001_7ab3b1/2026-04-24T03-59-54Z__mempalace_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.3857076318008453,
+      "quality_score": 0.2,
+      "latency_score": 0.8694631590042263,
+      "cost_score": 0.7181500000000001,
+      "retrieve_p50_seconds": 0.26107368199154735,
+      "total_input_tokens": 55277,
+      "total_output_tokens": 1093,
+      "quality_sd_within_run": 0.3758324094593227,
+      "spend_usd": 0.182226,
+      "wall_seconds": 1632.4878577989875,
+      "result_path": "results/autoresearch/phase_a/exp001_7ab3b1/2026-04-24T04-27-06Z__mempalace_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.3699649487988372,
+      "quality_score": 0.175,
+      "latency_score": 0.8780372439941857,
+      "cost_score": 0.718575,
+      "retrieve_p50_seconds": 0.2439255120116286,
+      "total_input_tokens": 55178,
+      "total_output_tokens": 1107,
+      "quality_sd_within_run": 0.3544361719689456,
+      "spend_usd": 0.182139,
+      "wall_seconds": 1528.3098954639863,
+      "result_path": "results/autoresearch/phase_a/exp001_7ab3b1/2026-04-24T04-52-34Z__mempalace_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.3716223743343776,
+  "composite_sd": 0.010887187328934282,
+  "accepted": false,
+  "reason": "rejected: delta -0.3495 < required 0.0300 (running_sd=0.0200)",
+  "delta_vs_accepted": -0.3494983891648159,
+  "created_at": "2026-04-24T04:52:34.975434+00:00",
+  "reasoning": "The baseline uses 'exchange' extract mode which does regex-based exchange-pair chunking. Switching to 'general' extract mode activates the general_extractor which tags chunks by memory_type (decisions, preferences, milestones, problems, emotions) \u2014 this is a fundamentally different semantic extraction approach that should produce higher-signal, more semantically coherent chunks. Combined with this, I'll enable the closet LLM using claude-haiku-4.5 (fast and cheap) to enrich memory closets after ingest, which should improve retrieval relevance. I'll also reduce top_k from 20 to 10 since the general extractor produces higher-signal chunks that need fewer results to find the relevant ones, which also reduces latency and cost. This is a 3-knob architectural swing testing the hypothesis that semantic extraction + closet enrichment dramatically outperforms regex chunking for conversational recall quality.",
+  "rationale": "Switching from regex exchange-pair chunking to semantic general extraction plus closet LLM enrichment is the single largest architectural lever available and could plausibly move quality by 10+ percentage points."
+}

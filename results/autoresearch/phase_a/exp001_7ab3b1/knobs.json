@@ -1,0 +1,9 @@
+{
+  "extract_mode": "general",
+  "chunk_leading_prefix": "> ",
+  "top_k": 10,
+  "max_distance": 0.0,
+  "closet_llm_enabled": true,
+  "closet_llm_model": "anthropic/claude-haiku-4.5",
+  "closet_llm_sample": 0
+}

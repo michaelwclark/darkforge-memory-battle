@@ -1,0 +1,61 @@
+{
+  "experiment_id": "exp005_147576",
+  "knobs": {
+    "extract_mode": "exchange",
+    "chunk_leading_prefix": "- ",
+    "top_k": 40,
+    "max_distance": 0.0,
+    "closet_llm_enabled": true,
+    "closet_llm_model": "anthropic/claude-haiku-4.5",
+    "closet_llm_sample": 0
+  },
+  "reps": [
+    {
+      "composite": 0.8132763402022589,
+      "quality_score": 0.85,
+      "latency_score": 0.8687842010112945,
+      "cost_score": 0.445195,
+      "retrieve_p50_seconds": 0.262431597977411,
+      "total_input_tokens": 109447,
+      "total_output_tokens": 1514,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.351051,
+      "wall_seconds": 1818.4112731869682,
+      "result_path": "results/autoresearch/phase_a/exp005_147576/2026-04-24T10-30-01Z__mempalace_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.7442811731006428,
+      "quality_score": 0.75,
+      "latency_score": 0.8676258655032143,
+      "cost_score": 0.45755999999999997,
+      "retrieve_p50_seconds": 0.2647482689935714,
+      "total_input_tokens": 107029,
+      "total_output_tokens": 1459,
+      "quality_sd_within_run": 0.3872983346207417,
+      "spend_usd": 0.342972,
+      "wall_seconds": 1797.583778330998,
+      "result_path": "results/autoresearch/phase_a/exp005_147576/2026-04-24T10-59-59Z__mempalace_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.7709318944955598,
+      "quality_score": 0.7875,
+      "latency_score": 0.8739119724777993,
+      "cost_score": 0.44899500000000003,
+      "retrieve_p50_seconds": 0.25217605504440144,
+      "total_input_tokens": 108760,
+      "total_output_tokens": 1441,
+      "quality_sd_within_run": 0.34708608442287053,
+      "spend_usd": 0.347895,
+      "wall_seconds": 1756.6545806929935,
+      "result_path": "results/autoresearch/phase_a/exp005_147576/2026-04-24T11-29-16Z__mempalace_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.7761631359328205,
+  "composite_sd": 0.028409008971054334,
+  "accepted": false,
+  "reason": "rejected: delta +0.0073 < required 0.0358 (running_sd=0.0239)",
+  "delta_vs_accepted": 0.007333712365583334,
+  "created_at": "2026-04-24T11:29:16.375313+00:00",
+  "reasoning": "The history shows that exchange mode with closet_llm enabled is the winning combination (exp002 at 0.7688). Exp004 tried paragraph chunking ('') and got 0.7857 but failed to clear the ratchet delta. The key insight is that paragraph chunking ('') may produce better semantic units for retrieval but needs the right top_k to compensate for potentially noisier chunks. Let me combine paragraph chunking with a higher top_k of 40 AND increase closet_llm_sample from 0 to 100 to enrich more closets \u2014 this tests whether richer closet enrichment on paragraph-chunked content dramatically improves quality. The hypothesis is that paragraph chunks contain more context per chunk, and with more closets regenerated (sample=100 vs 0=all, but 100 forces a focused sample), retrieval quality jumps significantly. Actually sample=0 means ALL closets which should be best \u2014 so let me instead try the '- ' list-style prefix which hasn't been tested, combined with top_k=40 and closet_llm_sample=0. The '- ' prefix creates list-style chunks which may parse differently and yield better semantic boundaries for the Dark Forge workload which involves code/decisions/architecture discussions.",
+  "rationale": "Testing the untried '- ' list-style prefix combined with top_k=40 is a genuine architectural hypothesis \u2014 list-style chunking may produce better-delimited memory units for the Dark Forge workload, and the larger retrieval pool compensates if chunks are more granular."
+}

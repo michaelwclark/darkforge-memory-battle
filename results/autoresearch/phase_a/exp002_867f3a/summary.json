@@ -1,0 +1,61 @@
+{
+  "experiment_id": "exp002_867f3a",
+  "knobs": {
+    "extract_mode": "exchange",
+    "chunk_leading_prefix": "> ",
+    "top_k": 30,
+    "max_distance": 0.0,
+    "closet_llm_enabled": true,
+    "closet_llm_model": "anthropic/claude-haiku-4.5",
+    "closet_llm_sample": 0
+  },
+  "reps": [
+    {
+      "composite": 0.7428343658998496,
+      "quality_score": 0.7375,
+      "latency_score": 0.8684243294992484,
+      "cost_score": 0.528995,
+      "retrieve_p50_seconds": 0.26315134100150317,
+      "total_input_tokens": 92838,
+      "total_output_tokens": 1363,
+      "quality_sd_within_run": 0.38303883615111406,
+      "spend_usd": 0.298959,
+      "wall_seconds": 1735.0234609860345,
+      "result_path": "results/autoresearch/phase_a/exp002_867f3a/2026-04-24T05-58-30Z__mempalace_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.7777468786999023,
+      "quality_score": 0.7875,
+      "latency_score": 0.8642468934995122,
+      "cost_score": 0.536475,
+      "retrieve_p50_seconds": 0.27150621300097555,
+      "total_input_tokens": 91311,
+      "total_output_tokens": 1394,
+      "quality_sd_within_run": 0.34708608442287053,
+      "spend_usd": 0.29484299999999997,
+      "wall_seconds": 1797.903907902015,
+      "result_path": "results/autoresearch/phase_a/exp002_867f3a/2026-04-24T06-28-29Z__mempalace_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.7859070261019598,
+      "quality_score": 0.8,
+      "latency_score": 0.8673301305097993,
+      "cost_score": 0.52441,
+      "retrieve_p50_seconds": 0.2653397389804013,
+      "total_input_tokens": 93878,
+      "total_output_tokens": 1240,
+      "quality_sd_within_run": 0.35,
+      "spend_usd": 0.300234,
+      "wall_seconds": 1738.0452952419873,
+      "result_path": "results/autoresearch/phase_a/exp002_867f3a/2026-04-24T06-57-27Z__mempalace_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.7688294235672372,
+  "composite_sd": 0.018680725695288766,
+  "accepted": true,
+  "reason": "accepted: delta +0.0477 >= required 0.0300 (running_sd=0.0200)",
+  "delta_vs_accepted": 0.04770866006804364,
+  "created_at": "2026-04-24T06:57:27.740513+00:00",
+  "reasoning": "The previous experiment tried too many changes at once, and the 'general' extract_mode combined with closet_llm may have degraded quality significantly (composite dropped from 0.72 to 0.37). The baseline uses 'exchange' mode which seems to work well. Let me test the closet_llm feature in isolation with the exchange mode preserved, since closet_llm enrichment could improve retrieval quality by summarizing and organizing memories. I'll use claude-haiku-4.5 which is fast and cheap, keep extract_mode as 'exchange', bump top_k to 30 for broader recall, and enable closet_llm with sample=0 (all closets). The hypothesis is that closet enrichment on top of the working exchange pipeline will boost quality meaningfully.",
+  "rationale": "Enabling closet_llm enrichment on top of the proven exchange pipeline while increasing top_k to 30 tests whether LLM-organized memory closets improve retrieval quality without breaking the working baseline configuration."
+}

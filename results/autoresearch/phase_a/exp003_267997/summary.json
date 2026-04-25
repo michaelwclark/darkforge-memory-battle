@@ -1,0 +1,61 @@
+{
+  "experiment_id": "exp003_267997",
+  "knobs": {
+    "extract_mode": "exchange",
+    "chunk_leading_prefix": "> ",
+    "top_k": 40,
+    "max_distance": 0.5,
+    "closet_llm_enabled": true,
+    "closet_llm_model": "anthropic/claude-haiku-4.5",
+    "closet_llm_sample": 50
+  },
+  "reps": [
+    {
+      "composite": 0.4827441219961718,
+      "quality_score": 0.3125,
+      "latency_score": 0.8702106099808589,
+      "cost_score": 0.89952,
+      "retrieve_p50_seconds": 0.2595787800382823,
+      "total_input_tokens": 19125,
+      "total_output_tokens": 971,
+      "quality_sd_within_run": 0.45328660911171864,
+      "spend_usd": 0.07194,
+      "wall_seconds": 1752.9537121710018,
+      "result_path": "results/autoresearch/phase_a/exp003_267997/2026-04-24T07-26-47Z__mempalace_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.49925144119580467,
+      "quality_score": 0.3375,
+      "latency_score": 0.8690047059790231,
+      "cost_score": 0.892005,
+      "retrieve_p50_seconds": 0.26199058804195374,
+      "total_input_tokens": 20624,
+      "total_output_tokens": 975,
+      "quality_sd_within_run": 0.4628377145393405,
+      "spend_usd": 0.07649700000000001,
+      "wall_seconds": 1818.1981888869777,
+      "result_path": "results/autoresearch/phase_a/exp003_267997/2026-04-24T07-57-06Z__mempalace_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.49954739179729485,
+      "quality_score": 0.3375,
+      "latency_score": 0.8695869589864742,
+      "cost_score": 0.8938,
+      "retrieve_p50_seconds": 0.2608260820270516,
+      "total_input_tokens": 20268,
+      "total_output_tokens": 972,
+      "quality_sd_within_run": 0.4628377145393405,
+      "spend_usd": 0.07538399999999999,
+      "wall_seconds": 1873.4269558459637,
+      "result_path": "results/autoresearch/phase_a/exp003_267997/2026-04-24T08-28-19Z__mempalace_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.49384765166309047,
+  "composite_sd": 0.007852310699734083,
+  "accepted": false,
+  "reason": "rejected: delta -0.2750 < required 0.0358 (running_sd=0.0239)",
+  "delta_vs_accepted": -0.2749817719041467,
+  "created_at": "2026-04-24T08:28:20.108141+00:00",
+  "reasoning": "The current best config uses exchange mode with closet_llm enabled at top_k=30, scoring 0.7688. The big remaining lever is the closet_llm_sample parameter \u2014 currently 0 (meaning all closets get regenerated, but with no sampling constraint). However, the more interesting hypothesis is whether increasing top_k further to 40 combined with a distance filter (max_distance=0.5) could improve quality by retrieving more candidates but filtering out noise. The distance filter at 0.5 should eliminate low-relevance chunks while the higher top_k ensures we still get enough signal. This is a meaningful architectural change testing whether quality-filtered retrieval beats unfiltered retrieval \u2014 a plausible 5+ point quality swing.",
+  "rationale": "Combining maximum retrieval breadth (top_k=40) with cosine distance filtering (0.5) and targeted closet enrichment (sample=50) tests whether quality-filtered retrieval with richer closet context can push composite well above the current 0.7688 ceiling."
+}
