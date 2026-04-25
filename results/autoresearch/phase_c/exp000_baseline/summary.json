@@ -1,0 +1,48 @@
+{
+  "experiment_id": "exp000_baseline",
+  "knobs": {
+    "extract_mode": "exchange",
+    "chunk_leading_prefix": "> ",
+    "top_k": 20,
+    "max_distance": 0.0,
+    "closet_llm_enabled": false,
+    "closet_llm_model": null,
+    "closet_llm_sample": 0
+  },
+  "reps": [
+    {
+      "composite": 0.7431386033030674,
+      "quality_score": 0.7,
+      "latency_score": 0.9340580165153369,
+      "cost_score": 0.66327,
+      "retrieve_p50_seconds": 0.13188396696932614,
+      "total_input_tokens": 65297,
+      "total_output_tokens": 2049,
+      "quality_sd_within_run": 0.43969686527576396,
+      "spend_usd": 0.226626,
+      "wall_seconds": 4618.535993825004,
+      "result_path": "results/autoresearch/phase_c/exp000_baseline/2026-04-25T07-16-41Z__mempalace_tuned__track_c_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.7373341313696714,
+      "quality_score": 0.6916666666666667,
+      "latency_score": 0.934449823515024,
+      "cost_score": 0.662775,
+      "retrieve_p50_seconds": 0.13110035296995193,
+      "total_input_tokens": 65348,
+      "total_output_tokens": 2097,
+      "quality_sd_within_run": 0.4362880037569475,
+      "spend_usd": 0.227499,
+      "wall_seconds": 4576.369055828021,
+      "result_path": "results/autoresearch/phase_c/exp000_baseline/2026-04-25T08-32-58Z__mempalace_tuned__track_c_autoresearch__rep1.json"
+    }
+  ],
+  "composite_mean": 0.7402363673363694,
+  "composite_sd": 0.0029022359666979747,
+  "accepted": true,
+  "reason": "baseline-calibration: no prior accepted composite to compare against",
+  "delta_vs_accepted": 0.0,
+  "created_at": "2026-04-25T08:32:58.283383+00:00",
+  "reasoning": "Baseline calibration run - matches the locked Article-1 MemPalace driver defaults.",
+  "rationale": "Seed the ratchet with the Article-1 configuration composite."
+}

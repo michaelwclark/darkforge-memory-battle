@@ -80,6 +80,102 @@ n=10 smoke passed quality_mean=0.650, recall@k=0.9, 5-min ingest — well
 under the 30-min Phase B target. Rebuilt corpus at 1500-char cap fits
 nomic-embed-text's real 2048-token positional embedding window.
 
+# 🛑 PHASE C SCALING-CLIFF — 2026-04-25 (locked)
+
+**Phase C autoresearch on Track C is too expensive to converge.**
+
+Observed timings on the Phase C kick (haystack_size=10, n_items=30,
+Claude/Claude judge):
+
+| config | wall per rep | source |
+|---|---|---|
+| baseline (exchange, no closet_llm) | 76 min | landed (composite 0.7402) |
+| general extract + closet_llm + top_k=10 | ~17 hr/rep (extrapolated) | killed mid-flight |
+| exchange + closet_llm | ~7.6 hr/rep (estimate, 6× exchange) | not run |
+
+The autoresearch loop's first proposal (exp001) was the same bold
+4-knob swing the Phase A loop tried — `general` extract_mode runs
+MemPalace's `general_extractor.extract_memories` LLM call PER
+turn-file. On Track C corpus (avg 170 turns/session) that's ~51K
+LLM calls per rep. Extrapolated wall = 17 hr/rep × 2 reps × 6
+experiments = **200+ hours** of compute. Even forcing exchange-only
+mode still leaves closet_llm at ~7.6 hr/rep due to per-question
+closet regeneration. Phase C in its current shape would take 90+
+hours.
+
+**Killed Phase C at 16:02Z.** Baseline data preserved
+(`results/autoresearch/phase_c/exp000_baseline/summary.json` —
+composite 0.7402 ± 0.003, quality 0.696 mean over 2 reps).
+ChromaDB baseline reference at haystack=10 also preserved (3 reps).
+
+## Recovery plan (to execute when genomesbox is back online)
+
+Pivot from "let autoresearch find the winner on Track C" to "port
+Phase A's winner config to Track C and compare against ChromaDB
+baseline." Article 2's narrative gets stronger, not weaker:
+
+> *"I expected autoresearch to converge in 12 hours. Instead it hit a
+> Track-C scaling cliff: MemPalace's general-extract mode runs an LLM
+> per ingest turn — fine on LongMemEval's 5-15-turn sessions, untenable
+> on real coding-agent transcripts at 170 turns/session. So I took the
+> winner from Phase A's smaller-scale loop (exchange + closet_llm
+> haiku + top_k=30) and tested whether it ports. Here's the comparison."*
+
+That's a more honest engineering story than "autoresearch found a
+winner overnight" — and the ratchet-refused-cosmetic-wins story from
+Phase A still holds in the methodology section.
+
+### Concrete next steps (post-power-on)
+
+1. Run **3 configs on Track C n=10** (smaller subset for tractable
+   wall time, ~4-6 hr total):
+   - **A. Locked Article-1 MemPalace baseline** (exchange, no closet_llm,
+     top_k=20) — sanity that we reproduce the haystack=10 baseline
+     number.
+   - **B. Phase A winner ported** (exchange + closet_llm=haiku + top_k=30)
+     — the "tuned MemPalace" data point.
+   - **C. closet_llm with claude-sonnet-4.6** instead of haiku — does a
+     stronger LLM in closet regeneration improve quality?
+   3 reps each, all under the battle-eligible Claude/Claude judge.
+
+2. Recompute **chromadb_baseline_ref** mean composite from the 3 already-
+   landed reps. Already-on-disk under `results/*__chromadb_baseline__track_c_darkforge_ref.json`.
+
+3. Run `scripts/pick_tournament_winner.py` on the new data + chromadb_ref
+   to get the Article 2 verdict.
+
+4. Run `scripts/build_money_chart.py` to produce the chart spec.
+
+5. If `tuned_mempalace_wins` → draft Article 2.
+   If `chromadb_baseline > tuned_mempalace` → kick a new round on
+   `chromadb_baseline_tunable` (Branch 2 of the tournament). The
+   contestant-registry refactor + ChromaDB tunable wrapper + program.md
+   are all already on `main` — Phase C.6 can fire immediately.
+
+6. Article 2 disclosure paragraph: "the autoresearch loop hit a Track-C
+   scaling cliff on the first bold proposal; we did not let it converge
+   on Track C. Instead, we ported the Phase A winner and tested it
+   against the off-the-shelf control. The methodology finding —
+   editable surfaces need cost-gating because LLM-driven proposers will
+   happily propose costly experiments — is its own contribution."
+
+## What's preserved through power cycle
+
+- `data/darkforge/sessions.json` — corpus, gitignored, 17MB on disk, persists
+- `data/mempalace_autoresearch/` — palace data dirs from prior runs, persists (can be wiped)
+- `results/autoresearch/phase_c/exp000_baseline/` — Phase C baseline (preserved)
+- `results/autoresearch/phase_a/` — Phase A's full 6-experiment matrix (preserved, on `main`)
+- `results/2026-04-25T*__chromadb_baseline__track_c_darkforge_ref.json` (3 files, preserved on disk; not committed yet — see steady-state checklist)
+- `results/2026-04-25T02-45-03Z__chromadb_baseline__track_c_darkforge_smoketest.json` (Phase B smoke; preserved)
+
+## Decisions logged elsewhere
+
+- Memory: F057 article2-tournament-reframe + article2-trackc-scaling-cliff
+- Notion: Battle Results Log comments (last comment id 34d683b4-8dab-811e-b4b9-001d596d970f)
+- CLAUDE.md (project root): trust + flagship-LLM second-opinion rule
+
+---
+
 # 🎯 STRATEGIC REFRAME — 2026-04-25 (locked)
 
 **The goal is the world's best agentic-work memory system, not "tune MemPalace."**
