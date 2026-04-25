@@ -554,9 +554,12 @@ def _load_items(phase: str, n: int, seed: int):
         items = load("oracle")
         return stratified_subset(items, n, seed=seed)
     if phase == "c":
-        raise NotImplementedError(
-            "Track C dataset loader not wired yet — Phase B ships that."
-        )
+        from darkforge_memory_battle.datasets import darkforge as df
+
+        all_items = df.load()
+        # Phase C deterministic subset — first n in stable id-order (the
+        # authored questions file order). 0 = all.
+        return all_items[: n or len(all_items)]
     raise ValueError(f"unknown phase: {phase}")
 
 

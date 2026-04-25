@@ -74,10 +74,11 @@ reps ran ~30 min each due to per-closet haiku calls).
   question authoring.
 - `src/darkforge_memory_battle/tracks/track_c.py` + `scripts/run_track_c.py`.
 
-**Blocker: `data/darkforge/questions_v1.json` not yet authored.** Per the
-sealed-held-out rule, the question set drives everything downstream.
-Phase B/C/D are gated on this file landing. Next agent / Michael should
-decide: author manually, LLM-propose for curation, or delegate.
+**Phase B COMPLETE (2026-04-25):** `data/darkforge/questions_v1.json`
+committed (30 questions, bypass-review per Michael). ChromaDB baseline
+n=10 smoke passed quality_mean=0.650, recall@k=0.9, 5-min ingest — well
+under the 30-min Phase B target. Rebuilt corpus at 1500-char cap fits
+nomic-embed-text's real 2048-token positional embedding window.
 
 ---
 
