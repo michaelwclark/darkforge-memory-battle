@@ -24,7 +24,7 @@ SCRIPTS_DIR = REPO_ROOT / "scripts"
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
-from autoresearch import composite_from_track_result  # noqa: E402
+from autoresearch import composite_from_track_result, spend_usd_from_result  # noqa: E402
 
 PHASE_C_DIR = REPO_ROOT / "results" / "autoresearch" / "phase_c"
 BASELINE_COMPOSITE = 0.7402  # from exp000_baseline/summary.json
@@ -47,8 +47,9 @@ def _load_reps(exp_dir: Path) -> list[dict]:
         except (json.JSONDecodeError, OSError):
             continue
         axis = composite_from_track_result(payload)
-        axis["spend_usd"] = payload.get("spend_usd", 0.0)
-        axis["wall_seconds"] = payload.get("wall_seconds", 0.0)
+        axis["spend_usd"] = spend_usd_from_result(payload)
+        # wall_seconds is not stored in the rep JSON; set 0.0 as a placeholder.
+        axis["wall_seconds"] = 0.0
         axis["result_path"] = (
             str(path.relative_to(REPO_ROOT))
             if path.is_relative_to(REPO_ROOT)
