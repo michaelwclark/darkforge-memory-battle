@@ -80,6 +80,42 @@ n=10 smoke passed quality_mean=0.650, recall@k=0.9, 5-min ingest — well
 under the 30-min Phase B target. Rebuilt corpus at 1500-char cap fits
 nomic-embed-text's real 2048-token positional embedding window.
 
+# 🎯 STRATEGIC REFRAME — 2026-04-25 (locked)
+
+**The goal is the world's best agentic-work memory system, not "tune MemPalace."**
+MemPalace was the convenient first-tune target. If after Phase C the
+tuned MemPalace loses to ANY untuned contestant, we tune that contestant
+next. Tournament-style.
+
+## Decision tree (after Phase C + Phase C.5 land)
+
+1. **tuned-MemPalace tops all** → DONE. Phase D drafts.
+2. **chromadb_baseline / hindsight / mem0 beats tuned-MemPalace** →
+   spawn Phase C.6 on the winner. Each contestant has its own knob
+   surface; we build a `<winner>_tunable.py` that mirrors
+   `mempalace_tunable.py` shape and a per-contestant `program.md`.
+3. **Multiple contestants beat tuned-MemPalace** → tune the strongest
+   first; if another untuned contestant still tops the latest tuned
+   winner, tune that one. Continue until no untuned contestant overtakes.
+
+**Phase D drafting is gated on tournament convergence, not first-tune.**
+
+## Pre-built tunable surfaces (Sonnet 4.6 subagents, 2026-04-25)
+
+Pre-staged so Phase C.6 can fire the moment numbers land:
+
+- `contestants/chromadb_baseline_tunable.py` — embedder swap (nomic /
+  BAAI/bge / openai-3-small), top_k, chunk-grouping, reranker on/off,
+  metadata filters.
+- `contestants/hindsight_tunable.py` — internal LLM model swap, temp,
+  memory-type weighting (episodic/semantic/working), Docker env flags.
+- `contestants/mem0_tunable.py` — `infer=True/False`, extraction LLM
+  choice, embedder swap, scope-tier weights.
+
+**OMEGA / Letta / Zep deferred to a separate Article 2.5 follow-up.**
+Not blocking the methodology piece. Gives those vendors a chance to
+send preferred configs first.
+
 ---
 
 # 🔒 LOCKED DECISION — 2026-04-22
