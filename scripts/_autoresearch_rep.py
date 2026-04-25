@@ -13,10 +13,10 @@ Usage (internal):
         --n-items 20 --seed 1337 --top-k 20 \\
         --track-label track_a_oracle_autoresearch \\
         --exp-dir results/autoresearch/phase_a/expXXX \\
-        --phase a
+        --phase a [--contestant mempalace_tuned]
 
 Writes:
-    <exp-dir>/<ts>__mempalace_tuned__<track>__rep<i>.json
+    <exp-dir>/<ts>__<contestant_name>__<track>__rep<i>.json
 Prints to stdout:
     one JSON line with the axis scores, spend, wall time, result_path.
 """
@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import importlib
 import json
 import sys
 import time  # noqa: E402
@@ -38,6 +39,29 @@ if str(SRC_ROOT) not in sys.path:
 from dotenv import load_dotenv  # noqa: E402
 
 load_dotenv(REPO_ROOT / ".env", override=True)
+
+
+# Registry of tunable contestants available to the autoresearch loop.
+# Values are (module_path, class_name) tuples; the import is lazy (importlib)
+# so only the requested contestant's dependencies are loaded per rep.
+_TUNABLE_REGISTRY: dict[str, tuple[str, str]] = {
+    "mempalace_tuned": (
+        "darkforge_memory_battle.contestants.mempalace_tunable",
+        "MemPalaceTunableContestant",
+    ),
+    "chromadb_baseline_tuned": (
+        "darkforge_memory_battle.contestants.chromadb_baseline_tunable",
+        "ChromaDbBaselineTunable",
+    ),
+    "hindsight_tuned": (
+        "darkforge_memory_battle.contestants.hindsight_tunable",
+        "HindsightTunable",
+    ),
+    "mem0_tuned": (
+        "darkforge_memory_battle.contestants.mem0_tunable",
+        "Mem0Tunable",
+    ),
+}
 
 
 PRICE_PER_M_INPUT_TOKENS = 3.0
@@ -75,6 +99,24 @@ def _load_items(phase: str, n: int, seed: int):
     raise ValueError(f"unknown phase: {phase}")
 
 
+def _build_contestant(name: str, config: dict, bank_id: str):
+    """Lazily import and instantiate the requested tunable contestant.
+
+    Only the named contestant's module is imported — unused contestants'
+    heavy dependencies (mem0ai, sentence-transformers, etc.) stay unloaded.
+    Raises ValueError for unknown names so the caller surfaces the mistake
+    immediately rather than crashing on a missing attribute.
+    """
+    if name not in _TUNABLE_REGISTRY:
+        raise ValueError(
+            f"unknown contestant {name!r}; available: {sorted(_TUNABLE_REGISTRY)}"
+        )
+    module_path, class_name = _TUNABLE_REGISTRY[name]
+    mod = importlib.import_module(module_path)
+    cls = getattr(mod, class_name)
+    return cls(config=config, bank_id=bank_id)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--exp-id", required=True)
@@ -86,18 +128,21 @@ def main() -> int:
     ap.add_argument("--track-label", required=True)
     ap.add_argument("--exp-dir", required=True)
     ap.add_argument("--phase", required=True, choices=["a", "c"])
+    ap.add_argument(
+        "--contestant",
+        default="mempalace_tuned",
+        choices=sorted(_TUNABLE_REGISTRY),
+        help="Tunable contestant to run (default: mempalace_tuned).",
+    )
     args = ap.parse_args()
 
     knobs = json.loads(args.knobs_json)
     items = _load_items(args.phase, args.n_items, args.seed)
 
-    from darkforge_memory_battle.contestants.mempalace_tunable import (
-        MemPalaceTunableContestant,
-    )
     from darkforge_memory_battle.tracks.track_a import run_track_a
 
     bank_id = f"autoresearch_{args.exp_id}_rep{args.rep_idx}"
-    contestant = MemPalaceTunableContestant(config=knobs, bank_id=bank_id)
+    contestant = _build_contestant(args.contestant, knobs, bank_id)
 
     started = time.perf_counter()
     result = run_track_a(contestant, items, top_k=args.top_k, label=args.track_label)

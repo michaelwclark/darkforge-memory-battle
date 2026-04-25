@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-04-25T03:54:55.155186+00:00",
+  "track": "track_a_oracle",
+  "title": "Autoresearch tuning of MemPalace vs off-the-shelf contestants on Track A Oracle workload [Phase A stand-in \u2014 Phase C data not yet available]",
+  "x_axis": {
+    "label": "experiment index",
+    "values": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ]
+  },
+  "lines": [
+    {
+      "name": "tuned MemPalace (autoresearch journey)",
+      "kind": "autoresearch_journey",
+      "phase": "a",
+      "x_values": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "y_values": [
+        0.721121,
+        0.371622,
+        0.768829,
+        0.493848,
+        0.785714,
+        0.776163
+      ],
+      "accepted_mask": [
+        true,
+        false,
+        true,
+        false,
+        false,
+        false
+      ],
+      "y_axis_metric": "composite",
+      "color_hint": "steelblue",
+      "marker_hint": "circle"
+    }
+  ],
+  "reference_lines": [
+    {
+      "name": "chromadb_baseline (untuned)",
+      "contestant": "chromadb_baseline",
+      "y_value": 0.7141,
+      "y_sd": 0.0059,
+      "n_reps": 2,
+      "color_hint": "green",
+      "linestyle_hint": "dashed",
+      "label_position": "right"
+    }
+  ],
+  "annotations": [
+    {
+      "x": 0,
+      "y": 0.7211,
+      "text": "initial calibration",
+      "kind": "ratchet_acceptance"
+    },
+    {
+      "x": 2,
+      "y": 0.7688,
+      "text": "closet_llm_enabled on, closet_llm_model: null\u2192anthropic/claude-haiku-4.5, top_k 20\u219230",
+      "kind": "ratchet_acceptance"
+    }
+  ],
+  "matplotlib_spec": {
+    "figsize": [
+      10,
+      6
+    ],
+    "x_label": "experiment index",
+    "y_label": "composite (0.7 quality + 0.2 latency + 0.1 cost)",
+    "title": "Autoresearch tuning of MemPalace vs off-the-shelf contestants on Track A Oracle workload [Phase A stand-in \u2014 Phase C data not yet available]",
+    "legend_loc": "lower right",
+    "y_lim": [
+      0.0,
+      1.0
+    ],
+    "grid": true,
+    "render_python": "import json, matplotlib\nmatplotlib.use(\"Agg\")\nimport matplotlib.pyplot as plt\nimport matplotlib.patches as mpatches\n\n# ---- journey line ----\njourney = next(ln for ln in data[\"lines\"] if ln[\"kind\"] == \"autoresearch_journey\")\nxs = journey[\"x_values\"]\nys = journey[\"y_values\"]\naccepted = journey[\"accepted_mask\"]\n\nfig, ax = plt.subplots(figsize=tuple(data[\"matplotlib_spec\"][\"figsize\"]))\n\n# Draw the line connecting all experiments.\nax.plot(xs, ys, color=journey[\"color_hint\"], linewidth=1.8, zorder=2)\n\n# Accepted experiments: filled circles; rejected: open circles.\nfor x, y, acc in zip(xs, ys, accepted):\n    if acc:\n        ax.plot(x, y, \"o\", color=journey[\"color_hint\"], markersize=9,\n                markeredgewidth=1.5, zorder=3)\n    else:\n        ax.plot(x, y, \"o\", color=journey[\"color_hint\"], markersize=7,\n                markerfacecolor=\"white\", markeredgewidth=1.5, zorder=3)\n\n# ---- reference lines ----\nref_colors = {}\nfor ref in data[\"reference_lines\"]:\n    y = ref[\"y_value\"]\n    color = ref[\"color_hint\"]\n    ref_colors[ref[\"name\"]] = color\n    ax.axhline(y=y, color=color, linestyle=\"--\", linewidth=1.4, alpha=0.85, zorder=1)\n    # Label on the right edge.\n    ax.text(max(xs) + 0.15, y, ref[\"name\"],\n            va=\"center\", ha=\"left\", fontsize=8, color=color)\n\n# ---- annotations (accepted ratchet points) ----\nfor ann in data.get(\"annotations\", []):\n    ax.annotate(\n        ann[\"text\"],\n        xy=(ann[\"x\"], ann[\"y\"]),\n        xytext=(ann[\"x\"] + 0.25, ann[\"y\"] + 0.04),\n        fontsize=7,\n        arrowprops=dict(arrowstyle=\"->\", lw=0.8),\n        color=\"#333333\",\n    )\n\n# ---- axes formatting ----\nspec = data[\"matplotlib_spec\"]\nax.set_xlabel(spec[\"x_label\"], fontsize=11)\nax.set_ylabel(spec[\"y_label\"], fontsize=11)\nax.set_title(spec[\"title\"], fontsize=12, wrap=True)\nax.set_ylim(spec[\"y_lim\"])\nax.set_xticks(xs)\nif spec.get(\"grid\"):\n    ax.grid(True, alpha=0.35)\n\n# Legend entry for the journey line.\njourney_patch = mpatches.Patch(color=journey[\"color_hint\"], label=journey[\"name\"])\nax.legend(handles=[journey_patch], loc=spec[\"legend_loc\"], fontsize=9)\n\nplt.tight_layout()\nplt.savefig(out_path, dpi=150)\nplt.close(fig)\nprint(f\"chart saved to {out_path}\")\n"
+  }
+}

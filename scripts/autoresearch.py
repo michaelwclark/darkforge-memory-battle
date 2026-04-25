@@ -81,14 +81,6 @@ def _utc_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _read_program_md() -> str:
-    return (REPO_ROOT / "config" / "autoresearch" / "program.md").read_text()
-
-
-def _read_baseline() -> dict:
-    return json.loads((REPO_ROOT / "config" / "autoresearch" / "baseline.json").read_text())
-
-
 def _autoresearch_dir(phase: str) -> Path:
     d = REPO_ROOT / "results" / "autoresearch" / f"phase_{phase}"
     d.mkdir(parents=True, exist_ok=True)
@@ -229,15 +221,6 @@ def _cumulative_spend(history: list[ExperimentRecord]) -> float:
 # ---------- Rep runner ----------
 
 
-def _build_tunable_contestant(knobs: dict, exp_id: str):
-    from darkforge_memory_battle.contestants.mempalace_tunable import (
-        MemPalaceTunableContestant,
-    )
-
-    bank_id = f"autoresearch_{exp_id}"
-    return MemPalaceTunableContestant(config=knobs, bank_id=bank_id)
-
-
 def _run_one_rep(
     knobs: dict,
     exp_id: str,
@@ -248,6 +231,7 @@ def _run_one_rep(
     track_label: str,
     exp_dir: Path,
     phase: str,
+    contestant: str = "mempalace_tuned",
 ) -> dict:
     """Run one rep as a SUBPROCESS.
 
@@ -284,6 +268,8 @@ def _run_one_rep(
         str(exp_dir),
         "--phase",
         phase,
+        "--contestant",
+        contestant,
     ]
     # Inherit env so BATTLE_JUDGE_CONFIG + OPENROUTER_API_KEY reach the child.
     env = os.environ.copy()
@@ -328,6 +314,7 @@ def _run_experiment(
     reasoning: str,
     rationale: str,
     phase: str,
+    contestant: str = "mempalace_tuned",
 ) -> ExperimentRecord:
     """Run N_REPS of the given knob patch; return the aggregated record."""
     exp_dir.mkdir(parents=True, exist_ok=True)
@@ -346,6 +333,7 @@ def _run_experiment(
             track_label=track_label,
             exp_dir=exp_dir,
             phase=phase,
+            contestant=contestant,
         )
         reps.append(rep_axis)
         logging.info(
@@ -605,6 +593,21 @@ def main(argv: list[str] | None = None) -> int:
         "get 'track_a_oracle_autoresearch' (phase a) or 'track_c_autoresearch' (phase c).",
     )
     p.add_argument("--dry-run", action="store_true", help="Plan + print; do not run any reps or LLM calls")
+    p.add_argument(
+        "--contestant",
+        default="mempalace_tuned",
+        help="Tunable contestant to run (default: mempalace_tuned).",
+    )
+    p.add_argument(
+        "--program-md",
+        default="config/autoresearch/program.md",
+        help="Path to the program.md file for the proposer prompt (relative to repo root).",
+    )
+    p.add_argument(
+        "--baseline-json",
+        default="config/autoresearch/baseline.json",
+        help="Path to the baseline.json file (relative to repo root).",
+    )
     args = p.parse_args(argv)
 
     logging.basicConfig(
@@ -617,8 +620,8 @@ def main(argv: list[str] | None = None) -> int:
     _ensure_judge_config(args.phase)
 
     phase_dir = _autoresearch_dir(args.phase)
-    program_md = _read_program_md()
-    baseline = _read_baseline()
+    program_md = (REPO_ROOT / args.program_md).read_text()
+    baseline = json.loads((REPO_ROOT / args.baseline_json).read_text())
 
     track_label = args.track_label or {
         "a": "track_a_oracle_autoresearch",
@@ -626,6 +629,16 @@ def main(argv: list[str] | None = None) -> int:
     }[args.phase]
 
     items = _load_items(args.phase, args.n_items, args.seed)
+    logging.info(
+        "autoresearch loop: contestant=%s program=%s baseline=%s phase=%s n_items=%d seed=%d track_label=%s",
+        args.contestant,
+        args.program_md,
+        args.baseline_json,
+        args.phase,
+        args.n_items,
+        args.seed,
+        track_label,
+    )
     logging.info(
         "loaded %d items (phase=%s, n_items=%d, seed=%d, track_label=%s)",
         len(items),
@@ -658,6 +671,7 @@ def main(argv: list[str] | None = None) -> int:
             reasoning="Baseline calibration run - matches the locked Article-1 MemPalace driver defaults.",
             rationale="Seed the ratchet with the Article-1 configuration composite.",
             phase=args.phase,
+            contestant=args.contestant,
         )
         accepted_rec = _current_accepted(history, baseline)
         running_sd = _running_sd(history)
@@ -765,6 +779,7 @@ def main(argv: list[str] | None = None) -> int:
                 reasoning=reasoning,
                 rationale=rationale,
                 phase=args.phase,
+                contestant=args.contestant,
             )
         except ValueError as e:
             # Schema violation — log + continue to next proposal
