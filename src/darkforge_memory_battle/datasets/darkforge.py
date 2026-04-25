@@ -94,7 +94,11 @@ MAX_SESSION_TURNS = int(os.environ.get("DARKFORGE_MAX_TURNS", "500"))
 # assistant tails can be multi-kilobyte unified diffs; trim them. Turn-
 # level truncation preserves turn count (so question_type="thread-recall"
 # still gets realistic thread-length signals).
-PER_TURN_MAX_CHARS = int(os.environ.get("DARKFORGE_TURN_MAX_CHARS", "2000"))
+# nomic-embed-text (the ChromaDB-baseline embedder) has 2048-token positional
+# embeddings; texts over ~1500 English chars tip past that limit and fail with
+# "input length exceeds the context length" from Ollama. Keep a generous
+# margin so all ingested turns fit.
+PER_TURN_MAX_CHARS = int(os.environ.get("DARKFORGE_TURN_MAX_CHARS", "1500"))
 
 
 _DATE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
@@ -211,8 +215,12 @@ def _extract_losmon_markdown(path: Path, source_tag: str) -> dict | None:
     text = text.strip()
     if len(text) < 200:
         return None
-    if len(text) > 8000:
-        text = text[:8000] + " […truncated]"
+    # Same embedder-context constraint as per-turn text. Longer losmon docs
+    # can and do exist (dark-factory-plan, master-roadmap) but the first
+    # ~1500 chars of a markdown doc reliably captures the topical keywords
+    # that drive retrieval. Accept the truncation as a Track C limitation.
+    if len(text) > PER_TURN_MAX_CHARS:
+        text = text[:PER_TURN_MAX_CHARS] + " […truncated]"
     # Use filename + relpath as the session id so retrieval resolvers can
     # round-trip back to the original path.
     rel = path.resolve().as_posix()
@@ -359,7 +367,7 @@ def load(
         anchor = [sid for sid in answer_ids if sid in by_sid]
 
         if haystack_size and haystack_size > 0:
-            rng = random.Random((seed, q["id"]))
+            rng = random.Random(f"{seed}::{q['id']}")
             pool = [sid for sid in full_ids if sid not in set(anchor)]
             rng.shuffle(pool)
             filler = pool[: max(0, haystack_size - len(anchor))]
