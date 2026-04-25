@@ -1,0 +1,15 @@
+{
+  "experiment_id": "exp000_baseline",
+  "description": "Mem0 locked Article-1 driver config. The starting point of the ratchet. Matches Mem0Contestant defaults: infer=true, OpenAI gpt-4o-mini extraction, OpenAI text-embedding-3-small embedder, top_k=10, all scope weights 1.0.",
+  "knobs": {
+    "infer": true,
+    "extraction_llm_provider": "openai",
+    "extraction_llm_model": "gpt-4o-mini",
+    "embedder_provider": "openai",
+    "embedder_model": "text-embedding-3-small",
+    "top_k": 10,
+    "scope_user_weight": 1.0,
+    "scope_agent_weight": 1.0,
+    "scope_session_weight": 1.0
+  }
+}

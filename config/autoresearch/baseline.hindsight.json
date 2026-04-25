@@ -1,0 +1,13 @@
+{
+  "experiment_id": "exp000_baseline",
+  "description": "Hindsight locked Article-1 driver config. The starting point of the ratchet.",
+  "knobs": {
+    "internal_llm_model": "openai/gpt-4o-mini",
+    "internal_llm_temperature": 0.0,
+    "top_k": 10,
+    "memory_type_weight_episodic": 1.0,
+    "memory_type_weight_semantic": 1.0,
+    "memory_type_weight_working": 1.0,
+    "recall_depth": 1
+  }
+}
