@@ -21,8 +21,13 @@ wheels/
 .ruff_cache/
 .mypy_cache/
 
-# Runtime state and contestant persistence
-data/
+# Runtime state and contestant persistence. Ignore everything under data/
+# EXCEPT the held-out Track C question sets — those are small, hand-authored,
+# and version-controlled as part of the published benchmark.
+data/*
+!data/darkforge/
+data/darkforge/*
+!data/darkforge/questions_v*.json
 
 # Run logs (large, regenerated per run; JSON in results/ is the citeable source)
 logs/
