@@ -325,9 +325,17 @@ def load_questions(path: Path = QUESTIONS_FILE) -> list[dict]:
 def load(
     corpus_path: Path = CORPUS_FILE,
     questions_path: Path = QUESTIONS_FILE,
-    haystack_size: int = 50,
+    haystack_size: int | None = None,
     seed: int = 1337,
 ) -> list[LmeItem]:
+    # Default haystack_size from env var (DARKFORGE_HAYSTACK_SIZE) or fall back
+    # to 10. Track C corpus sessions average ~170 turns; at haystack=50 the
+    # per-rep ingest is ~250K turn-files, which crushes MemPalace's per-turn
+    # mining pipeline (observed: ~9.5 min/question on Phase C baseline). 10 is
+    # a tractable default that still gives ~9-15 distractor sessions per
+    # question.
+    if haystack_size is None:
+        haystack_size = int(os.environ.get("DARKFORGE_HAYSTACK_SIZE", "10"))
     """Return a list of LmeItem; one per question.
 
     Each question gets its OWN haystack of `haystack_size` sessions,
