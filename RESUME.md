@@ -1,4 +1,10 @@
-# Resume prompt — Article 2 Phase C recovery
+# Resume prompt — Article 2 Phase C recovery [COMPLETE — 2026-04-28]
+
+**This recovery is done.** Verdict: `tuned_mempalace_wins`. Config B (haiku closet): 0.9561 ± 0.0005, quality=1.0000. Config C (sonnet closet): 0.9535 ± 0.0005, quality=1.0000. ChromaDB off-the-shelf: 0.7322. Article 2 MDX placeholders filled. See `results/ARTICLE_2_TOURNAMENT_VERDICT.json` and commit `3b816fe`.
+
+**Next step:** Michael reviews and approves the Article 2 MDX draft. Notion Content Library row needs Approved=true + Status=Ready when approved.
+
+---
 
 **For: a fresh Claude agent picking up the Article 2 work after the genomesbox power-cycle on 2026-04-25.**
 

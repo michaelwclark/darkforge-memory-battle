@@ -108,7 +108,7 @@ hours.
 composite 0.7402 ± 0.003, quality 0.696 mean over 2 reps).
 ChromaDB baseline reference at haystack=10 also preserved (3 reps).
 
-## Recovery plan (IN PROGRESS — 2026-04-25, picked up by Sonnet 4.6 after power-cycle)
+## Recovery plan (DONE — 2026-04-28, see ARTICLE_2_TOURNAMENT_VERDICT.json + commit 3b816fe)
 
 Pivot from "let autoresearch find the winner on Track C" to "port
 Phase A's winner config to Track C and compare against ChromaDB
