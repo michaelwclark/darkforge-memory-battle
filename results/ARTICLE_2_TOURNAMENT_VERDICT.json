@@ -1,0 +1,45 @@
+{
+  "generated_at": "2026-04-28T09:37:12.765737+00:00",
+  "track": "track_c_darkforge",
+  "contestants": [
+    {
+      "name": "mempalace_tuned",
+      "kind": "autoresearch_winner",
+      "composite_mean": 0.9535111798993411,
+      "quality_mean": 1.0,
+      "n_reps": 3,
+      "knobs": {
+        "extract_mode": "exchange",
+        "chunk_leading_prefix": "> ",
+        "top_k": 30,
+        "max_distance": 0.0,
+        "closet_llm_enabled": true,
+        "closet_llm_model": "anthropic/claude-sonnet-4.6",
+        "closet_llm_sample": 0
+      }
+    },
+    {
+      "name": "chromadb_baseline",
+      "kind": "off_the_shelf_reference",
+      "composite_mean": 0.7322084663114291,
+      "quality_mean": 0.7194444444444444,
+      "n_reps": 3,
+      "knobs": null
+    },
+    {
+      "name": "mempalace",
+      "kind": "off_the_shelf_reference",
+      "composite_mean": 0.6276940717313755,
+      "quality_mean": 0.5033333333333333,
+      "n_reps": 3,
+      "knobs": null
+    }
+  ],
+  "winner": "mempalace_tuned",
+  "verdict": "tuned_mempalace_wins",
+  "phase_c6_recommendation": {
+    "should_fire": false,
+    "target_contestant": null,
+    "reasoning": "Tuned MemPalace composite 0.9535 leads best off-the-shelf contestant 'chromadb_baseline' (0.7322) by +0.2213, which exceeds the 1.5\u00d7SD threshold of 0.0165. No Phase C.6 is needed \u2014 proceed to Phase D drafting."
+  }
+}

@@ -1,46 +1,34 @@
 {
-  "generated_at": "2026-04-25T03:54:55.155186+00:00",
-  "track": "track_a_oracle",
-  "title": "Autoresearch tuning of MemPalace vs off-the-shelf contestants on Track A Oracle workload [Phase A stand-in \u2014 Phase C data not yet available]",
+  "generated_at": "2026-04-28T09:37:12.823788+00:00",
+  "track": "track_c_darkforge",
+  "title": "Autoresearch tuning of MemPalace vs off-the-shelf contestants on Dark Forge workload",
   "x_axis": {
     "label": "experiment index",
     "values": [
       0,
       1,
-      2,
-      3,
-      4,
-      5
+      2
     ]
   },
   "lines": [
     {
       "name": "tuned MemPalace (autoresearch journey)",
       "kind": "autoresearch_journey",
-      "phase": "a",
+      "phase": "c",
       "x_values": [
         0,
         1,
-        2,
-        3,
-        4,
-        5
+        2
       ],
       "y_values": [
-        0.721121,
-        0.371622,
-        0.768829,
-        0.493848,
-        0.785714,
-        0.776163
+        0.740236,
+        0.956087,
+        0.953511
       ],
       "accepted_mask": [
         true,
-        false,
         true,
-        false,
-        false,
-        false
+        true
       ],
       "y_axis_metric": "composite",
       "color_hint": "steelblue",
@@ -51,10 +39,20 @@
     {
       "name": "chromadb_baseline (untuned)",
       "contestant": "chromadb_baseline",
-      "y_value": 0.7141,
-      "y_sd": 0.0059,
-      "n_reps": 2,
+      "y_value": 0.7322,
+      "y_sd": 0.011,
+      "n_reps": 3,
       "color_hint": "green",
+      "linestyle_hint": "dashed",
+      "label_position": "right"
+    },
+    {
+      "name": "mempalace (untuned)",
+      "contestant": "mempalace",
+      "y_value": 0.6277,
+      "y_sd": 0.0037,
+      "n_reps": 3,
+      "color_hint": "purple",
       "linestyle_hint": "dashed",
       "label_position": "right"
     }
@@ -62,14 +60,20 @@
   "annotations": [
     {
       "x": 0,
-      "y": 0.7211,
+      "y": 0.7402,
       "text": "initial calibration",
       "kind": "ratchet_acceptance"
     },
     {
-      "x": 2,
-      "y": 0.7688,
+      "x": 1,
+      "y": 0.9561,
       "text": "closet_llm_enabled on, closet_llm_model: null\u2192anthropic/claude-haiku-4.5, top_k 20\u219230",
+      "kind": "ratchet_acceptance"
+    },
+    {
+      "x": 2,
+      "y": 0.9535,
+      "text": "closet_llm_model: anthropic/claude-haiku-4.5\u2192anthropic/claude-sonnet-4.6",
       "kind": "ratchet_acceptance"
     }
   ],
@@ -80,7 +84,7 @@
     ],
     "x_label": "experiment index",
     "y_label": "composite (0.7 quality + 0.2 latency + 0.1 cost)",
-    "title": "Autoresearch tuning of MemPalace vs off-the-shelf contestants on Track A Oracle workload [Phase A stand-in \u2014 Phase C data not yet available]",
+    "title": "Autoresearch tuning of MemPalace vs off-the-shelf contestants on Dark Forge workload",
     "legend_loc": "lower right",
     "y_lim": [
       0.0,
