@@ -1,0 +1,11 @@
+{
+  "experiment_id": "exp000_baseline",
+  "description": "GrepRetrieval locked Phase-1 driver config. The starting point for the grep autoresearch ratchet. case_sensitive=false + or_terms=true are the defaults that maximise recall on natural-language questions against declarative corpora.",
+  "knobs": {
+    "case_sensitive": false,
+    "context_lines": 2,
+    "max_hits": 20,
+    "or_terms": true,
+    "top_k_override": null
+  }
+}

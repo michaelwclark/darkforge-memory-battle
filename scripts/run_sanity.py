@@ -5,15 +5,36 @@ plumbing before committing LongMemEval budget.
     uv run python scripts/run_sanity.py --contestant hindsight
     uv run python scripts/run_sanity.py --contestant mem0
     uv run python scripts/run_sanity.py --contestant mempalace
+    uv run python scripts/run_sanity.py --contestant grep_retrieval
 """
 
 from __future__ import annotations
 
 import argparse
 import json
+from dataclasses import asdict
+from datetime import datetime
+from pathlib import Path
 
-from darkforge_memory_battle.reporting import memory_finding, notion_row_payload, save_json
+from darkforge_memory_battle.reporting import RESULTS_DIR, memory_finding, notion_row_payload, save_json
 from darkforge_memory_battle.tracks.sanity import run_sanity
+
+# Isolated results dir for the grep contestant — keeps its output out of the
+# shared results/ root so the orchestrator's non-recursive glob (results/*.json)
+# does NOT pick it up and auto-advance it through the battle pipeline before
+# it is reviewed.
+GREP_RESULTS_DIR = RESULTS_DIR / "grep"
+
+
+def _save_grep_json(result) -> Path:
+    """Write a TrackResult to results/grep/ instead of results/."""
+    GREP_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    payload = asdict(result)
+    ts = datetime.utcnow().strftime("%Y-%m-%dT%H-%M-%SZ")
+    filename = f"{ts}__{payload.get('contestant', 'unknown')}__{payload.get('track', 'unknown')}.json"
+    path = GREP_RESULTS_DIR / filename
+    path.write_text(json.dumps(payload, indent=2))
+    return path
 
 
 def _build_contestant(name: str):
@@ -33,6 +54,10 @@ def _build_contestant(name: str):
         from darkforge_memory_battle.contestants.mempalace import MemPalaceContestant
 
         return MemPalaceContestant(bank_id="battle-sanity")
+    if name == "grep_retrieval":
+        from darkforge_memory_battle.contestants.grep_retrieval import GrepRetrievalContestant
+
+        return GrepRetrievalContestant(base_dir="./data/grep_retrieval__sanity", bank_id="sanity")
     raise ValueError(f"unknown contestant: {name}")
 
 
@@ -44,7 +69,14 @@ def main() -> None:
 
     c = _build_contestant(args.contestant)
     result = run_sanity(c, top_k=args.top_k)
-    path = save_json(result)
+
+    # grep_retrieval writes to the isolated results/grep/ dir to avoid the
+    # orchestrator's glob (results/*.json) picking it up prematurely.
+    if args.contestant in ("grep_retrieval", "grep_retrieval_tuned"):
+        path = _save_grep_json(result)
+    else:
+        path = save_json(result)
+
     print(f"saved: {path}")
     print()
     print("---- notion row ----")
