@@ -61,6 +61,10 @@ _TUNABLE_REGISTRY: dict[str, tuple[str, str]] = {
         "darkforge_memory_battle.contestants.mem0_tunable",
         "Mem0Tunable",
     ),
+    "grep_retrieval_tuned": (
+        "darkforge_memory_battle.contestants.grep_retrieval_tunable",
+        "GrepRetrievalTunableContestant",
+    ),
 }
 
 

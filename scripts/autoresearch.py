@@ -608,6 +608,13 @@ def main(argv: list[str] | None = None) -> int:
         default="config/autoresearch/baseline.json",
         help="Path to the baseline.json file (relative to repo root).",
     )
+    p.add_argument(
+        "--results-dir",
+        default="",
+        help="Override the output directory for experiment artifacts (absolute or relative to repo root). "
+        "Default: results/autoresearch/phase_<phase>/. Use this to isolate a contestant's results "
+        "from the shared autoresearch tree (e.g. --results-dir results/grep/autoresearch).",
+    )
     args = p.parse_args(argv)
 
     logging.basicConfig(
@@ -619,7 +626,13 @@ def main(argv: list[str] | None = None) -> int:
 
     _ensure_judge_config(args.phase)
 
-    phase_dir = _autoresearch_dir(args.phase)
+    if args.results_dir:
+        phase_dir = Path(args.results_dir)
+        if not phase_dir.is_absolute():
+            phase_dir = REPO_ROOT / phase_dir
+        phase_dir.mkdir(parents=True, exist_ok=True)
+    else:
+        phase_dir = _autoresearch_dir(args.phase)
     program_md = (REPO_ROOT / args.program_md).read_text()
     baseline = json.loads((REPO_ROOT / args.baseline_json).read_text())
 
