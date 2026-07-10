@@ -1,7 +1,7 @@
 {
   "schema_version": "battle-analytics/v1",
-  "generated_at": "2026-07-10T03:02:19.388825+00:00",
-  "results_root": "/Users/genome/projects/darkforge-memory-battle/results/grep",
+  "generated_at": "2026-07-10T03:07:25.788084+00:00",
+  "results_root": "/home/genome/projects/darkforge-memory-battle/results/grep",
   "analytics_namespace": "grep",
   "storage": {
     "kind": "local_json_only",
@@ -60,6 +60,72 @@
         }
       },
       "run_started_at": "2026-06-24T05:56:15.385067+00:00",
+      "accepted": null
+    },
+    {
+      "namespace": "grep",
+      "config_id": "cfg_3942578da6b9",
+      "contestant": "grep_retrieval",
+      "track": "sanity",
+      "source_path": "2026-07-10T03-06-35Z__grep_retrieval__sanity.json",
+      "run_kind": "track_result",
+      "n_reps": 1,
+      "quality_mean": 1.0,
+      "quality_sd": 0.0,
+      "retrieve_p50_seconds": 0.004248843993991613,
+      "total_input_tokens": 5019,
+      "total_output_tokens": 328,
+      "spend_usd": 0.019976999999999998,
+      "composite": 0.9969016156006008,
+      "dimension_scores": {
+        "quality": 1.0,
+        "latency": 0.9978755780030042,
+        "cost": 0.973265
+      },
+      "config": {
+        "top_k": 5,
+        "stack_info": {
+          "embedder_provider": null,
+          "embedder_model": null,
+          "internal_llm_provider": null,
+          "internal_llm_model": null,
+          "notes": "Ripgrep lexical retriever. Corpus written as flat .txt files under data/grep_retrieval__sanity/<bank_id>/corpus/. No embedder, no LLM. Knobs: {case_sensitive=False, context_lines=2, max_hits=20, or_terms=True, top_k_override=None}."
+        }
+      },
+      "run_started_at": "2026-07-10T03:06:22.419399+00:00",
+      "accepted": null
+    },
+    {
+      "namespace": "grep",
+      "config_id": "cfg_b44dd0c6639c",
+      "contestant": "grep_retrieval_tuned",
+      "track": "sanity",
+      "source_path": "2026-07-10T03-07-08Z__grep_retrieval_tuned__sanity.json",
+      "run_kind": "track_result",
+      "n_reps": 1,
+      "quality_mean": 1.0,
+      "quality_sd": 0.0,
+      "retrieve_p50_seconds": 0.004163934849202633,
+      "total_input_tokens": 5018,
+      "total_output_tokens": 320,
+      "spend_usd": 0.019854,
+      "composite": 0.9969146065150798,
+      "dimension_scores": {
+        "quality": 1.0,
+        "latency": 0.9979180325753987,
+        "cost": 0.97331
+      },
+      "config": {
+        "top_k": 5,
+        "stack_info": {
+          "embedder_provider": null,
+          "embedder_model": null,
+          "internal_llm_provider": null,
+          "internal_llm_model": null,
+          "notes": "Autoresearch tunable GrepRetrieval. Knobs: {case_sensitive=False, context_lines=2, max_hits=20, or_terms=True, top_k_override=None}. Base notes: Ripgrep lexical retriever. Corpus written as flat .txt files under data/grep_retrieval_tuned__sanity/<bank_id>/corpus/. No embedder, no LLM. Knobs: {case_sensitive=False, context_lines=2, max_hits=20, or_terms=True, top_k_override=None}."
+        }
+      },
+      "run_started_at": "2026-07-10T03:06:35.817503+00:00",
       "accepted": null
     },
     {
@@ -462,8 +528,8 @@
   "leaderboard": [
     {
       "namespace": "grep",
-      "contestant": "grep_retrieval",
-      "config_id": "cfg_3942578da6b9",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_b44dd0c6639c",
       "track": "sanity",
       "tracks": [
         "sanity"
@@ -472,17 +538,43 @@
       "n_reps": 1,
       "quality_mean": 1.0,
       "quality_sd_mean": 0.0,
-      "composite_mean": 0.9959328959000912,
+      "composite_mean": 0.9969146065150798,
       "composite_sd_across_runs": 0.0,
-      "retrieve_p50_seconds_mean": 0.010636040999088436,
-      "spend_usd": 0.022821,
+      "retrieve_p50_seconds_mean": 0.004163934849202633,
+      "spend_usd": 0.019854,
       "dimension_means": {
-        "cost": 0.969965,
-        "latency": 0.9946819795004558,
+        "cost": 0.97331,
+        "latency": 0.9979180325753987,
         "quality": 1.0
       },
       "source_paths": [
-        "2026-06-24T05-56-44Z__grep_retrieval__sanity.json"
+        "2026-07-10T03-07-08Z__grep_retrieval_tuned__sanity.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval",
+      "config_id": "cfg_3942578da6b9",
+      "track": "sanity",
+      "tracks": [
+        "sanity"
+      ],
+      "n_runs": 2,
+      "n_reps": 2,
+      "quality_mean": 1.0,
+      "quality_sd_mean": 0.0,
+      "composite_mean": 0.9964172557503459,
+      "composite_sd_across_runs": 0.00048435985025480077,
+      "retrieve_p50_seconds_mean": 0.007442442496540025,
+      "spend_usd": 0.042798,
+      "dimension_means": {
+        "cost": 0.971615,
+        "latency": 0.99627877875173,
+        "quality": 1.0
+      },
+      "source_paths": [
+        "2026-06-24T05-56-44Z__grep_retrieval__sanity.json",
+        "2026-07-10T03-06-35Z__grep_retrieval__sanity.json"
       ]
     },
     {
@@ -765,14 +857,25 @@
   "money_chart": [
     {
       "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_b44dd0c6639c",
+      "quality_mean": 1.0,
+      "composite_mean": 0.996915,
+      "spend_usd": 0.019854,
+      "retrieve_p50_ms": 4.164,
+      "n_runs": 1,
+      "n_reps": 1
+    },
+    {
+      "namespace": "grep",
       "contestant": "grep_retrieval",
       "config_id": "cfg_3942578da6b9",
       "quality_mean": 1.0,
-      "composite_mean": 0.995933,
-      "spend_usd": 0.022821,
-      "retrieve_p50_ms": 10.636,
-      "n_runs": 1,
-      "n_reps": 1
+      "composite_mean": 0.996417,
+      "spend_usd": 0.042798,
+      "retrieve_p50_ms": 7.442,
+      "n_runs": 2,
+      "n_reps": 2
     },
     {
       "namespace": "grep",

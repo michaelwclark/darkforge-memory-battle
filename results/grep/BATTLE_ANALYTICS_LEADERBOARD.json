@@ -1,6 +1,6 @@
 {
   "schema_version": "battle-analytics/v1",
-  "generated_at": "2026-07-10T03:02:19.388825+00:00",
+  "generated_at": "2026-07-10T03:07:25.788084+00:00",
   "storage": {
     "kind": "local_json_only",
     "mongo_writes": false,
@@ -12,8 +12,8 @@
   "leaderboard": [
     {
       "namespace": "grep",
-      "contestant": "grep_retrieval",
-      "config_id": "cfg_3942578da6b9",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_b44dd0c6639c",
       "track": "sanity",
       "tracks": [
         "sanity"
@@ -22,17 +22,43 @@
       "n_reps": 1,
       "quality_mean": 1.0,
       "quality_sd_mean": 0.0,
-      "composite_mean": 0.9959328959000912,
+      "composite_mean": 0.9969146065150798,
       "composite_sd_across_runs": 0.0,
-      "retrieve_p50_seconds_mean": 0.010636040999088436,
-      "spend_usd": 0.022821,
+      "retrieve_p50_seconds_mean": 0.004163934849202633,
+      "spend_usd": 0.019854,
       "dimension_means": {
-        "cost": 0.969965,
-        "latency": 0.9946819795004558,
+        "cost": 0.97331,
+        "latency": 0.9979180325753987,
         "quality": 1.0
       },
       "source_paths": [
-        "2026-06-24T05-56-44Z__grep_retrieval__sanity.json"
+        "2026-07-10T03-07-08Z__grep_retrieval_tuned__sanity.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval",
+      "config_id": "cfg_3942578da6b9",
+      "track": "sanity",
+      "tracks": [
+        "sanity"
+      ],
+      "n_runs": 2,
+      "n_reps": 2,
+      "quality_mean": 1.0,
+      "quality_sd_mean": 0.0,
+      "composite_mean": 0.9964172557503459,
+      "composite_sd_across_runs": 0.00048435985025480077,
+      "retrieve_p50_seconds_mean": 0.007442442496540025,
+      "spend_usd": 0.042798,
+      "dimension_means": {
+        "cost": 0.971615,
+        "latency": 0.99627877875173,
+        "quality": 1.0
+      },
+      "source_paths": [
+        "2026-06-24T05-56-44Z__grep_retrieval__sanity.json",
+        "2026-07-10T03-06-35Z__grep_retrieval__sanity.json"
       ]
     },
     {

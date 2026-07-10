@@ -1,6 +1,6 @@
 {
   "schema_version": "battle-analytics/v1",
-  "generated_at": "2026-07-10T03:02:19.388825+00:00",
+  "generated_at": "2026-07-10T03:07:25.788084+00:00",
   "storage": {
     "kind": "local_json_only",
     "mongo_writes": false,
@@ -12,14 +12,25 @@
   "money_chart": [
     {
       "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_b44dd0c6639c",
+      "quality_mean": 1.0,
+      "composite_mean": 0.996915,
+      "spend_usd": 0.019854,
+      "retrieve_p50_ms": 4.164,
+      "n_runs": 1,
+      "n_reps": 1
+    },
+    {
+      "namespace": "grep",
       "contestant": "grep_retrieval",
       "config_id": "cfg_3942578da6b9",
       "quality_mean": 1.0,
-      "composite_mean": 0.995933,
-      "spend_usd": 0.022821,
-      "retrieve_p50_ms": 10.636,
-      "n_runs": 1,
-      "n_reps": 1
+      "composite_mean": 0.996417,
+      "spend_usd": 0.042798,
+      "retrieve_p50_ms": 7.442,
+      "n_runs": 2,
+      "n_reps": 2
     },
     {
       "namespace": "grep",
