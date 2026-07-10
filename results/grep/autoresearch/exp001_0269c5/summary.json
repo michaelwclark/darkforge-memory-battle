@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp001_0269c5",
+  "knobs": {
+    "case_sensitive": false,
+    "context_lines": 2,
+    "max_hits": 20,
+    "or_terms": false,
+    "top_k_override": 5
+  },
+  "reps": [
+    {
+      "composite": 0.36354017679380624,
+      "quality_score": 0.1,
+      "latency_score": 0.9957083839690313,
+      "cost_score": 0.943985,
+      "retrieve_p50_seconds": 0.008583232061937451,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.043689,
+      "wall_seconds": 48.88835461810231,
+      "result_path": "results/grep/autoresearch/exp001_0269c5/2026-06-24T06-11-37Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.36358118600013106,
+      "quality_score": 0.1,
+      "latency_score": 0.9959134300006554,
+      "cost_score": 0.943985,
+      "retrieve_p50_seconds": 0.008173139998689294,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.043689,
+      "wall_seconds": 49.42116371099837,
+      "result_path": "results/grep/autoresearch/exp001_0269c5/2026-06-24T06-12-26Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.3635523953967392,
+      "quality_score": 0.1,
+      "latency_score": 0.9957694769836962,
+      "cost_score": 0.943985,
+      "retrieve_p50_seconds": 0.008461046032607555,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.043689,
+      "wall_seconds": 50.23288229200989,
+      "result_path": "results/grep/autoresearch/exp001_0269c5/2026-06-24T06-13-17Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.36355791939689214,
+  "composite_sd": 1.7191561575676052e-05,
+  "accepted": false,
+  "reason": "rejected: delta -0.4096 < required 0.0300 (running_sd=0.0200)",
+  "delta_vs_accepted": -0.40959249376957624,
+  "created_at": "2026-06-24T06:13:17.171264+00:00",
+  "reasoning": "The baseline uses OR-term matching (any query token triggers a hit) which is high-recall but low-precision \u2014 many irrelevant chunks get retrieved. Switching to AND-ish ordered matching (or_terms=false) forces ripgrep to find chunks where query tokens appear in sequence, dramatically improving precision. With higher-precision hits we likely need fewer results, so pairing with top_k_override=5 should further concentrate quality. This combination tests whether precision-over-recall is the right trade-off for the Dark Forge workload, and could plausibly move quality by 5-15 percentage points in either direction \u2014 exactly the bold swing the anti-timidity clause demands.",
+  "rationale": "Switching from OR to AND-ish ordered term matching combined with a tighter top_k is a fundamental retrieval strategy change that could shift quality by 5\u201315 points, far exceeding the 3-point acceptance threshold."
+}

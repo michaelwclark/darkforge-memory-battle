@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp006_55f9c6",
+  "knobs": {
+    "case_sensitive": true,
+    "context_lines": 2,
+    "max_hits": 50,
+    "or_terms": false,
+    "top_k_override": 40
+  },
+  "reps": [
+    {
+      "composite": 0.3635603908941746,
+      "quality_score": 0.1,
+      "latency_score": 0.9958094544708729,
+      "cost_score": 0.943985,
+      "retrieve_p50_seconds": 0.008381091058254242,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.043689,
+      "wall_seconds": 49.34638578002341,
+      "result_path": "results/grep/autoresearch/exp006_55f9c6/2026-06-24T16-42-23Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.3635606228167787,
+      "quality_score": 0.1,
+      "latency_score": 0.9958106140838936,
+      "cost_score": 0.943985,
+      "retrieve_p50_seconds": 0.008378771832212806,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.043689,
+      "wall_seconds": 46.20681717409752,
+      "result_path": "results/grep/autoresearch/exp006_55f9c6/2026-06-24T16-43-09Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.3635597137993798,
+      "quality_score": 0.1,
+      "latency_score": 0.9958060689968988,
+      "cost_score": 0.943985,
+      "retrieve_p50_seconds": 0.00838786200620234,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.043689,
+      "wall_seconds": 47.31057312106714,
+      "result_path": "results/grep/autoresearch/exp006_55f9c6/2026-06-24T16-43-57Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.3635602425034444,
+  "composite_sd": 3.856535703553235e-07,
+  "accepted": false,
+  "reason": "rejected: delta -0.4650 < required 0.0416 (running_sd=0.0277)",
+  "delta_vs_accepted": -0.4650438653978804,
+  "created_at": "2026-06-24T16:43:57.410935+00:00",
+  "reasoning": "The current best config uses case_sensitive=true, max_hits=50, top_k_override=30, or_terms=true. Experiment 005 showed that increasing max_hits to 100 and top_k to 50 hurt performance (composite dropped to 0.7961), suggesting more hits/chunks adds noise rather than signal. The sweet spot seems to be around top_k=30 with case_sensitive=true. I want to test whether switching to AND-ish matching (or_terms=false) combined with case_sensitive=true can improve precision. The previous or_terms=false test (exp001) failed badly but used case_sensitive=false and top_k=5 \u2014 a very different configuration. With case_sensitive=true, the AND-ish regex pattern should find highly relevant chunks that contain all query terms in order, potentially boosting quality significantly. I'll also increase top_k to 40 to compensate for potentially fewer matches from the stricter AND pattern, and keep max_hits at 50.",
+  "rationale": "Switching or_terms to false with case_sensitive=true tests a fundamentally different retrieval strategy (AND-ish ordered matching) that was never tried with case-sensitivity enabled, a combination plausibly worth 5-15 quality points if the Dark Forge corpus has precise terminology."
+}

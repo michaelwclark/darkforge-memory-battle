@@ -1,0 +1,899 @@
+{
+  "schema_version": "battle-analytics/v1",
+  "generated_at": "2026-07-10T03:02:19.388825+00:00",
+  "results_root": "/Users/genome/projects/darkforge-memory-battle/results/grep",
+  "analytics_namespace": "grep",
+  "storage": {
+    "kind": "local_json_only",
+    "mongo_writes": false,
+    "atlas_db": null,
+    "atlas_collection": null,
+    "production_memory_ops_safe": true,
+    "notes": "This analytics builder reads local result JSON only and has no MongoDB writer."
+  },
+  "metric_definitions": [
+    {
+      "name": "quality",
+      "weight": 0.7,
+      "description": "Mean answer-quality score reported by the track runner."
+    },
+    {
+      "name": "latency",
+      "weight": 0.2,
+      "description": "1 - retrieve_p50_seconds / 2.0; clamped to 0..1."
+    },
+    {
+      "name": "cost",
+      "weight": 0.1,
+      "description": "1 - judge token total / 200000; clamped to 0..1."
+    }
+  ],
+  "runs": [
+    {
+      "namespace": "grep",
+      "config_id": "cfg_3942578da6b9",
+      "contestant": "grep_retrieval",
+      "track": "sanity",
+      "source_path": "2026-06-24T05-56-44Z__grep_retrieval__sanity.json",
+      "run_kind": "track_result",
+      "n_reps": 1,
+      "quality_mean": 1.0,
+      "quality_sd": 0.0,
+      "retrieve_p50_seconds": 0.010636040999088436,
+      "total_input_tokens": 5607,
+      "total_output_tokens": 400,
+      "spend_usd": 0.022821,
+      "composite": 0.9959328959000912,
+      "dimension_scores": {
+        "quality": 1.0,
+        "latency": 0.9946819795004558,
+        "cost": 0.969965
+      },
+      "config": {
+        "top_k": 5,
+        "stack_info": {
+          "embedder_provider": null,
+          "embedder_model": null,
+          "internal_llm_provider": null,
+          "internal_llm_model": null,
+          "notes": "Ripgrep lexical retriever. Corpus written as flat .txt files under data/grep_retrieval__sanity/<bank_id>/corpus/. No embedder, no LLM. Knobs: {case_sensitive=False, context_lines=2, max_hits=20, or_terms=True, top_k_override=None}."
+        }
+      },
+      "run_started_at": "2026-06-24T05:56:15.385067+00:00",
+      "accepted": null
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp000_baseline",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp000_baseline/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.7583333333333333,
+      "quality_sd": 0.38075645094440475,
+      "retrieve_p50_seconds": 0.004989201668649912,
+      "total_input_tokens": 113109,
+      "total_output_tokens": 1259,
+      "spend_usd": 1.074648,
+      "composite": 0.7731504131664683,
+      "dimension_scores": {
+        "quality": 0.7583333333333333,
+        "latency": 0.997505399165675,
+        "cost": 0.42815999999999993
+      },
+      "config": {
+        "experiment_id": "exp000_baseline",
+        "knobs": {
+          "case_sensitive": false,
+          "context_lines": 2,
+          "max_hits": 20,
+          "or_terms": true,
+          "top_k_override": null
+        }
+      },
+      "run_started_at": "2026-06-24T06:10:28.077640+00:00",
+      "accepted": true
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp001_0269c5",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp001_0269c5/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.10000000000000002,
+      "quality_sd": 0.3,
+      "retrieve_p50_seconds": 0.0084058060310781,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "spend_usd": 0.131067,
+      "composite": 0.3635579193968922,
+      "dimension_scores": {
+        "quality": 0.10000000000000002,
+        "latency": 0.995797096984461,
+        "cost": 0.943985
+      },
+      "config": {
+        "experiment_id": "exp001_0269c5",
+        "knobs": {
+          "case_sensitive": false,
+          "context_lines": 2,
+          "max_hits": 20,
+          "or_terms": false,
+          "top_k_override": 5
+        }
+      },
+      "run_started_at": "2026-06-24T06:13:17.171264+00:00",
+      "accepted": false
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp002_fd2b52",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp002_fd2b52/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.6458333333333334,
+      "quality_sd": 0.44405980365681774,
+      "retrieve_p50_seconds": 0.004955304243291418,
+      "total_input_tokens": 105733,
+      "total_output_tokens": 1138,
+      "spend_usd": 1.002789,
+      "composite": 0.6981526362423376,
+      "dimension_scores": {
+        "quality": 0.6458333333333334,
+        "latency": 0.9975223478783543,
+        "cost": 0.4656483333333334
+      },
+      "config": {
+        "experiment_id": "exp002_fd2b52",
+        "knobs": {
+          "case_sensitive": false,
+          "context_lines": 2,
+          "max_hits": 100,
+          "or_terms": true,
+          "top_k_override": 15
+        }
+      },
+      "run_started_at": "2026-06-24T06:16:26.518198+00:00",
+      "accepted": false
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp003_0d6de6",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp003_0d6de6/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.7625000000000001,
+      "quality_sd": 0.39041268766901016,
+      "retrieve_p50_seconds": 0.0049890580121427774,
+      "total_input_tokens": 113735,
+      "total_output_tokens": 1312,
+      "spend_usd": 1.082673,
+      "composite": 0.7757272608654524,
+      "dimension_scores": {
+        "quality": 0.7625000000000001,
+        "latency": 0.9975054709939286,
+        "cost": 0.4247616666666667
+      },
+      "config": {
+        "experiment_id": "exp003_0d6de6",
+        "knobs": {
+          "case_sensitive": false,
+          "context_lines": 2,
+          "max_hits": 50,
+          "or_terms": true,
+          "top_k_override": 20
+        }
+      },
+      "run_started_at": "2026-06-24T06:19:49.161227+00:00",
+      "accepted": false
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp004_400325",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp004_400325/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.8375,
+      "quality_sd": 0.3359742803118484,
+      "retrieve_p50_seconds": 0.004137254320085049,
+      "total_input_tokens": 113029,
+      "total_output_tokens": 1436,
+      "spend_usd": 1.081863,
+      "composite": 0.8286041079013248,
+      "dimension_scores": {
+        "quality": 0.8375,
+        "latency": 0.9979313728399575,
+        "cost": 0.4276783333333333
+      },
+      "config": {
+        "experiment_id": "exp004_400325",
+        "knobs": {
+          "case_sensitive": true,
+          "context_lines": 2,
+          "max_hits": 50,
+          "or_terms": true,
+          "top_k_override": 30
+        }
+      },
+      "run_started_at": "2026-06-24T06:23:05.344985+00:00",
+      "accepted": true
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp005_6dba8b",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp005_6dba8b/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.7916666666666666,
+      "quality_sd": 0.3669441364864409,
+      "retrieve_p50_seconds": 0.004204887043063839,
+      "total_input_tokens": 113820,
+      "total_output_tokens": 1403,
+      "spend_usd": 1.087497,
+      "composite": 0.7961350112956935,
+      "dimension_scores": {
+        "quality": 0.7916666666666666,
+        "latency": 0.9978975564784681,
+        "cost": 0.42388833333333337
+      },
+      "config": {
+        "experiment_id": "exp005_6dba8b",
+        "knobs": {
+          "case_sensitive": true,
+          "context_lines": 2,
+          "max_hits": 100,
+          "or_terms": true,
+          "top_k_override": 50
+        }
+      },
+      "run_started_at": "2026-06-24T06:26:40.023084+00:00",
+      "accepted": false
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp006_55f9c6",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp006_55f9c6/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.10000000000000002,
+      "quality_sd": 0.3,
+      "retrieve_p50_seconds": 0.008382574965556463,
+      "total_input_tokens": 10363,
+      "total_output_tokens": 840,
+      "spend_usd": 0.131067,
+      "composite": 0.3635602425034444,
+      "dimension_scores": {
+        "quality": 0.10000000000000002,
+        "latency": 0.9958087125172218,
+        "cost": 0.943985
+      },
+      "config": {
+        "experiment_id": "exp006_55f9c6",
+        "knobs": {
+          "case_sensitive": true,
+          "context_lines": 2,
+          "max_hits": 50,
+          "or_terms": false,
+          "top_k_override": 40
+        }
+      },
+      "run_started_at": "2026-06-24T16:43:57.410935+00:00",
+      "accepted": false
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp007_fe0c94",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp007_fe0c94/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.6541666666666667,
+      "quality_sd": 0.44457876166912635,
+      "retrieve_p50_seconds": 0.004171179607510567,
+      "total_input_tokens": 101002,
+      "total_output_tokens": 1213,
+      "spend_usd": 0.9636150000000001,
+      "composite": 0.7063920487059157,
+      "dimension_scores": {
+        "quality": 0.6541666666666667,
+        "latency": 0.9979144101962447,
+        "cost": 0.48892500000000005
+      },
+      "config": {
+        "experiment_id": "exp007_fe0c94",
+        "knobs": {
+          "case_sensitive": true,
+          "context_lines": 2,
+          "max_hits": 30,
+          "or_terms": true,
+          "top_k_override": 15
+        }
+      },
+      "run_started_at": "2026-06-24T16:46:59.212175+00:00",
+      "accepted": false
+    },
+    {
+      "namespace": "grep",
+      "config_id": "exp008_dc06b1",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_autoresearch",
+      "source_path": "autoresearch/exp008_dc06b1/summary.json",
+      "run_kind": "autoresearch_summary",
+      "n_reps": 3,
+      "quality_mean": 0.8333333333333334,
+      "quality_sd": 0.3307870424258002,
+      "retrieve_p50_seconds": 0.004211751976981759,
+      "total_input_tokens": 113810,
+      "total_output_tokens": 1356,
+      "spend_usd": 1.085307,
+      "composite": 0.8253293248023019,
+      "dimension_scores": {
+        "quality": 0.8333333333333334,
+        "latency": 0.9978941240115091,
+        "cost": 0.42417166666666667
+      },
+      "config": {
+        "experiment_id": "exp008_dc06b1",
+        "knobs": {
+          "case_sensitive": true,
+          "context_lines": 2,
+          "max_hits": 50,
+          "or_terms": true,
+          "top_k_override": 50
+        }
+      },
+      "run_started_at": "2026-06-24T16:50:33.136840+00:00",
+      "accepted": false
+    },
+    {
+      "namespace": "grep",
+      "config_id": "cfg_e7ebd2e525de",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_validation_n100",
+      "source_path": "autoresearch/exp_validation_n100/2026-06-24T16-55-46Z__grep_retrieval_tuned__track_a_oracle_validation_n100__rep0.json",
+      "run_kind": "track_result",
+      "n_reps": 1,
+      "quality_mean": 0.5925,
+      "quality_sd": 0.45504807438335565,
+      "retrieve_p50_seconds": 0.004098046803846955,
+      "total_input_tokens": 481651,
+      "total_output_tokens": 5283,
+      "spend_usd": 1.524198,
+      "composite": 0.6143401953196153,
+      "dimension_scores": {
+        "quality": 0.5925,
+        "latency": 0.9979509765980765,
+        "cost": 0.0
+      },
+      "config": {
+        "top_k": 30,
+        "stack_info": {
+          "embedder_provider": null,
+          "embedder_model": null,
+          "internal_llm_provider": null,
+          "internal_llm_model": null,
+          "notes": "Autoresearch tunable GrepRetrieval. Knobs: {case_sensitive=True, context_lines=2, max_hits=50, or_terms=True, top_k_override=30}. Base notes: Ripgrep lexical retriever. Corpus written as flat .txt files under data/grep_retrieval_autoresearch/<bank_id>/corpus/. No embedder, no LLM. Knobs: {case_sensitive=True, context_lines=2, max_hits=50, or_terms=True, top_k_override=30}."
+        }
+      },
+      "run_started_at": "2026-06-24T16:50:33.333833+00:00",
+      "accepted": null
+    },
+    {
+      "namespace": "grep",
+      "config_id": "cfg_e7ebd2e525de",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_a_oracle_validation_n100",
+      "source_path": "autoresearch/exp_validation_n100/2026-06-24T17-01-02Z__grep_retrieval_tuned__track_a_oracle_validation_n100__rep1.json",
+      "run_kind": "track_result",
+      "n_reps": 1,
+      "quality_mean": 0.605,
+      "quality_sd": 0.44606613859381883,
+      "retrieve_p50_seconds": 0.004164405865594745,
+      "total_input_tokens": 481125,
+      "total_output_tokens": 5223,
+      "spend_usd": 1.5217200000000002,
+      "composite": 0.6230835594134405,
+      "dimension_scores": {
+        "quality": 0.605,
+        "latency": 0.9979177970672026,
+        "cost": 0.0
+      },
+      "config": {
+        "top_k": 30,
+        "stack_info": {
+          "embedder_provider": null,
+          "embedder_model": null,
+          "internal_llm_provider": null,
+          "internal_llm_model": null,
+          "notes": "Autoresearch tunable GrepRetrieval. Knobs: {case_sensitive=True, context_lines=2, max_hits=50, or_terms=True, top_k_override=30}. Base notes: Ripgrep lexical retriever. Corpus written as flat .txt files under data/grep_retrieval_autoresearch/<bank_id>/corpus/. No embedder, no LLM. Knobs: {case_sensitive=True, context_lines=2, max_hits=50, or_terms=True, top_k_override=30}."
+        }
+      },
+      "run_started_at": "2026-06-24T16:55:46.485096+00:00",
+      "accepted": null
+    },
+    {
+      "namespace": "grep",
+      "config_id": "cfg_7dd29e29d474",
+      "contestant": "grep_retrieval_tuned",
+      "track": "track_c_validation",
+      "source_path": "autoresearch/exp_validation_trackc/2026-06-24T17-03-13Z__grep_retrieval_tuned__track_c_validation__rep0.json",
+      "run_kind": "track_result",
+      "n_reps": 1,
+      "quality_mean": 0.7216666666666666,
+      "quality_sd": 0.41826692700023776,
+      "retrieve_p50_seconds": 0.007795260054990649,
+      "total_input_tokens": 244431,
+      "total_output_tokens": 2291,
+      "spend_usd": 0.767658,
+      "composite": 0.7043871406611675,
+      "dimension_scores": {
+        "quality": 0.7216666666666666,
+        "latency": 0.9961023699725047,
+        "cost": 0.0
+      },
+      "config": {
+        "top_k": 30,
+        "stack_info": {
+          "embedder_provider": null,
+          "embedder_model": null,
+          "internal_llm_provider": null,
+          "internal_llm_model": null,
+          "notes": "Autoresearch tunable GrepRetrieval. Knobs: {case_sensitive=True, context_lines=2, max_hits=50, or_terms=True, top_k_override=30}. Base notes: Ripgrep lexical retriever. Corpus written as flat .txt files under data/grep_retrieval_autoresearch/<bank_id>/corpus/. No embedder, no LLM. Knobs: {case_sensitive=True, context_lines=2, max_hits=50, or_terms=True, top_k_override=30}."
+        }
+      },
+      "run_started_at": "2026-06-24T17:01:03.004525+00:00",
+      "accepted": null
+    }
+  ],
+  "leaderboard": [
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval",
+      "config_id": "cfg_3942578da6b9",
+      "track": "sanity",
+      "tracks": [
+        "sanity"
+      ],
+      "n_runs": 1,
+      "n_reps": 1,
+      "quality_mean": 1.0,
+      "quality_sd_mean": 0.0,
+      "composite_mean": 0.9959328959000912,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.010636040999088436,
+      "spend_usd": 0.022821,
+      "dimension_means": {
+        "cost": 0.969965,
+        "latency": 0.9946819795004558,
+        "quality": 1.0
+      },
+      "source_paths": [
+        "2026-06-24T05-56-44Z__grep_retrieval__sanity.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp004_400325",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.8375,
+      "quality_sd_mean": 0.3359742803118484,
+      "composite_mean": 0.8286041079013248,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.004137254320085049,
+      "spend_usd": 1.081863,
+      "dimension_means": {
+        "cost": 0.4276783333333333,
+        "latency": 0.9979313728399575,
+        "quality": 0.8375
+      },
+      "source_paths": [
+        "autoresearch/exp004_400325/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp008_dc06b1",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.8333333333333334,
+      "quality_sd_mean": 0.3307870424258002,
+      "composite_mean": 0.8253293248023019,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.004211751976981759,
+      "spend_usd": 1.085307,
+      "dimension_means": {
+        "cost": 0.42417166666666667,
+        "latency": 0.9978941240115091,
+        "quality": 0.8333333333333334
+      },
+      "source_paths": [
+        "autoresearch/exp008_dc06b1/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp005_6dba8b",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.7916666666666666,
+      "quality_sd_mean": 0.3669441364864409,
+      "composite_mean": 0.7961350112956934,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.004204887043063839,
+      "spend_usd": 1.087497,
+      "dimension_means": {
+        "cost": 0.42388833333333337,
+        "latency": 0.9978975564784681,
+        "quality": 0.7916666666666666
+      },
+      "source_paths": [
+        "autoresearch/exp005_6dba8b/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp003_0d6de6",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.7625000000000001,
+      "quality_sd_mean": 0.39041268766901016,
+      "composite_mean": 0.7757272608654523,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.0049890580121427774,
+      "spend_usd": 1.082673,
+      "dimension_means": {
+        "cost": 0.4247616666666667,
+        "latency": 0.9975054709939286,
+        "quality": 0.7625000000000001
+      },
+      "source_paths": [
+        "autoresearch/exp003_0d6de6/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp000_baseline",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.7583333333333333,
+      "quality_sd_mean": 0.38075645094440475,
+      "composite_mean": 0.7731504131664683,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.004989201668649912,
+      "spend_usd": 1.074648,
+      "dimension_means": {
+        "cost": 0.42815999999999993,
+        "latency": 0.997505399165675,
+        "quality": 0.7583333333333333
+      },
+      "source_paths": [
+        "autoresearch/exp000_baseline/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp007_fe0c94",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.6541666666666667,
+      "quality_sd_mean": 0.44457876166912635,
+      "composite_mean": 0.7063920487059155,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.004171179607510567,
+      "spend_usd": 0.9636150000000001,
+      "dimension_means": {
+        "cost": 0.48892500000000005,
+        "latency": 0.9979144101962447,
+        "quality": 0.6541666666666667
+      },
+      "source_paths": [
+        "autoresearch/exp007_fe0c94/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_7dd29e29d474",
+      "track": "track_c_validation",
+      "tracks": [
+        "track_c_validation"
+      ],
+      "n_runs": 1,
+      "n_reps": 1,
+      "quality_mean": 0.7216666666666666,
+      "quality_sd_mean": 0.41826692700023776,
+      "composite_mean": 0.7043871406611675,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.007795260054990649,
+      "spend_usd": 0.767658,
+      "dimension_means": {
+        "cost": 0.0,
+        "latency": 0.9961023699725047,
+        "quality": 0.7216666666666666
+      },
+      "source_paths": [
+        "autoresearch/exp_validation_trackc/2026-06-24T17-03-13Z__grep_retrieval_tuned__track_c_validation__rep0.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp002_fd2b52",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.6458333333333334,
+      "quality_sd_mean": 0.44405980365681774,
+      "composite_mean": 0.6981526362423377,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.004955304243291418,
+      "spend_usd": 1.002789,
+      "dimension_means": {
+        "cost": 0.4656483333333334,
+        "latency": 0.9975223478783543,
+        "quality": 0.6458333333333334
+      },
+      "source_paths": [
+        "autoresearch/exp002_fd2b52/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_e7ebd2e525de",
+      "track": "track_a_oracle_validation_n100",
+      "tracks": [
+        "track_a_oracle_validation_n100"
+      ],
+      "n_runs": 2,
+      "n_reps": 2,
+      "quality_mean": 0.59875,
+      "quality_sd_mean": 0.45055710648858727,
+      "composite_mean": 0.6187118773665279,
+      "composite_sd_across_runs": 0.004371682046912628,
+      "retrieve_p50_seconds_mean": 0.00413122633472085,
+      "spend_usd": 3.0459180000000003,
+      "dimension_means": {
+        "cost": 0.0,
+        "latency": 0.9979343868326396,
+        "quality": 0.59875
+      },
+      "source_paths": [
+        "autoresearch/exp_validation_n100/2026-06-24T16-55-46Z__grep_retrieval_tuned__track_a_oracle_validation_n100__rep0.json",
+        "autoresearch/exp_validation_n100/2026-06-24T17-01-02Z__grep_retrieval_tuned__track_a_oracle_validation_n100__rep1.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp006_55f9c6",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.10000000000000002,
+      "quality_sd_mean": 0.3,
+      "composite_mean": 0.3635602425034444,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.008382574965556463,
+      "spend_usd": 0.131067,
+      "dimension_means": {
+        "cost": 0.943985,
+        "latency": 0.9958087125172218,
+        "quality": 0.10000000000000002
+      },
+      "source_paths": [
+        "autoresearch/exp006_55f9c6/summary.json"
+      ]
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp001_0269c5",
+      "track": "track_a_oracle_autoresearch",
+      "tracks": [
+        "track_a_oracle_autoresearch"
+      ],
+      "n_runs": 1,
+      "n_reps": 3,
+      "quality_mean": 0.10000000000000002,
+      "quality_sd_mean": 0.3,
+      "composite_mean": 0.36355791939689225,
+      "composite_sd_across_runs": 0.0,
+      "retrieve_p50_seconds_mean": 0.0084058060310781,
+      "spend_usd": 0.131067,
+      "dimension_means": {
+        "cost": 0.943985,
+        "latency": 0.995797096984461,
+        "quality": 0.10000000000000002
+      },
+      "source_paths": [
+        "autoresearch/exp001_0269c5/summary.json"
+      ]
+    }
+  ],
+  "money_chart": [
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval",
+      "config_id": "cfg_3942578da6b9",
+      "quality_mean": 1.0,
+      "composite_mean": 0.995933,
+      "spend_usd": 0.022821,
+      "retrieve_p50_ms": 10.636,
+      "n_runs": 1,
+      "n_reps": 1
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp006_55f9c6",
+      "quality_mean": 0.1,
+      "composite_mean": 0.36356,
+      "spend_usd": 0.131067,
+      "retrieve_p50_ms": 8.383,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp001_0269c5",
+      "quality_mean": 0.1,
+      "composite_mean": 0.363558,
+      "spend_usd": 0.131067,
+      "retrieve_p50_ms": 8.406,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_7dd29e29d474",
+      "quality_mean": 0.721667,
+      "composite_mean": 0.704387,
+      "spend_usd": 0.767658,
+      "retrieve_p50_ms": 7.795,
+      "n_runs": 1,
+      "n_reps": 1
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp007_fe0c94",
+      "quality_mean": 0.654167,
+      "composite_mean": 0.706392,
+      "spend_usd": 0.963615,
+      "retrieve_p50_ms": 4.171,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp002_fd2b52",
+      "quality_mean": 0.645833,
+      "composite_mean": 0.698153,
+      "spend_usd": 1.002789,
+      "retrieve_p50_ms": 4.955,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp000_baseline",
+      "quality_mean": 0.758333,
+      "composite_mean": 0.77315,
+      "spend_usd": 1.074648,
+      "retrieve_p50_ms": 4.989,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp004_400325",
+      "quality_mean": 0.8375,
+      "composite_mean": 0.828604,
+      "spend_usd": 1.081863,
+      "retrieve_p50_ms": 4.137,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp003_0d6de6",
+      "quality_mean": 0.7625,
+      "composite_mean": 0.775727,
+      "spend_usd": 1.082673,
+      "retrieve_p50_ms": 4.989,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp008_dc06b1",
+      "quality_mean": 0.833333,
+      "composite_mean": 0.825329,
+      "spend_usd": 1.085307,
+      "retrieve_p50_ms": 4.212,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp005_6dba8b",
+      "quality_mean": 0.791667,
+      "composite_mean": 0.796135,
+      "spend_usd": 1.087497,
+      "retrieve_p50_ms": 4.205,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_e7ebd2e525de",
+      "quality_mean": 0.59875,
+      "composite_mean": 0.618712,
+      "spend_usd": 3.045918,
+      "retrieve_p50_ms": 4.131,
+      "n_runs": 2,
+      "n_reps": 2
+    }
+  ]
+}

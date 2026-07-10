@@ -1,0 +1,146 @@
+{
+  "schema_version": "battle-analytics/v1",
+  "generated_at": "2026-07-10T03:02:19.388825+00:00",
+  "storage": {
+    "kind": "local_json_only",
+    "mongo_writes": false,
+    "atlas_db": null,
+    "atlas_collection": null,
+    "production_memory_ops_safe": true,
+    "notes": "This analytics builder reads local result JSON only and has no MongoDB writer."
+  },
+  "money_chart": [
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval",
+      "config_id": "cfg_3942578da6b9",
+      "quality_mean": 1.0,
+      "composite_mean": 0.995933,
+      "spend_usd": 0.022821,
+      "retrieve_p50_ms": 10.636,
+      "n_runs": 1,
+      "n_reps": 1
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp006_55f9c6",
+      "quality_mean": 0.1,
+      "composite_mean": 0.36356,
+      "spend_usd": 0.131067,
+      "retrieve_p50_ms": 8.383,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp001_0269c5",
+      "quality_mean": 0.1,
+      "composite_mean": 0.363558,
+      "spend_usd": 0.131067,
+      "retrieve_p50_ms": 8.406,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_7dd29e29d474",
+      "quality_mean": 0.721667,
+      "composite_mean": 0.704387,
+      "spend_usd": 0.767658,
+      "retrieve_p50_ms": 7.795,
+      "n_runs": 1,
+      "n_reps": 1
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp007_fe0c94",
+      "quality_mean": 0.654167,
+      "composite_mean": 0.706392,
+      "spend_usd": 0.963615,
+      "retrieve_p50_ms": 4.171,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp002_fd2b52",
+      "quality_mean": 0.645833,
+      "composite_mean": 0.698153,
+      "spend_usd": 1.002789,
+      "retrieve_p50_ms": 4.955,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp000_baseline",
+      "quality_mean": 0.758333,
+      "composite_mean": 0.77315,
+      "spend_usd": 1.074648,
+      "retrieve_p50_ms": 4.989,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp004_400325",
+      "quality_mean": 0.8375,
+      "composite_mean": 0.828604,
+      "spend_usd": 1.081863,
+      "retrieve_p50_ms": 4.137,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp003_0d6de6",
+      "quality_mean": 0.7625,
+      "composite_mean": 0.775727,
+      "spend_usd": 1.082673,
+      "retrieve_p50_ms": 4.989,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp008_dc06b1",
+      "quality_mean": 0.833333,
+      "composite_mean": 0.825329,
+      "spend_usd": 1.085307,
+      "retrieve_p50_ms": 4.212,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "exp005_6dba8b",
+      "quality_mean": 0.791667,
+      "composite_mean": 0.796135,
+      "spend_usd": 1.087497,
+      "retrieve_p50_ms": 4.205,
+      "n_runs": 1,
+      "n_reps": 3
+    },
+    {
+      "namespace": "grep",
+      "contestant": "grep_retrieval_tuned",
+      "config_id": "cfg_e7ebd2e525de",
+      "quality_mean": 0.59875,
+      "composite_mean": 0.618712,
+      "spend_usd": 3.045918,
+      "retrieve_p50_ms": 4.131,
+      "n_runs": 2,
+      "n_reps": 2
+    }
+  ]
+}

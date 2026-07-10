@@ -1,0 +1,7 @@
+{
+  "case_sensitive": true,
+  "context_lines": 2,
+  "max_hits": 50,
+  "or_terms": false,
+  "top_k_override": 40
+}

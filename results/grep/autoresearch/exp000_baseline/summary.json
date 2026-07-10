@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp000_baseline",
+  "knobs": {
+    "case_sensitive": false,
+    "context_lines": 2,
+    "max_hits": 20,
+    "or_terms": true,
+    "top_k_override": null
+  },
+  "reps": [
+    {
+      "composite": 0.7497802765861601,
+      "quality_score": 0.725,
+      "latency_score": 0.9973913829308003,
+      "cost_score": 0.42801999999999996,
+      "retrieve_p50_seconds": 0.0052172341383993626,
+      "total_input_tokens": 113074,
+      "total_output_tokens": 1322,
+      "quality_sd_within_run": 0.40233692348577704,
+      "spend_usd": 0.35905200000000004,
+      "wall_seconds": 76.09216586081311,
+      "result_path": "results/grep/autoresearch/exp000_baseline/2026-06-24T06-08-25Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.784662768306613,
+      "quality_score": 0.775,
+      "latency_score": 0.9974738415330648,
+      "cost_score": 0.42667999999999995,
+      "retrieve_p50_seconds": 0.0050523169338703156,
+      "total_input_tokens": 113458,
+      "total_output_tokens": 1206,
+      "quality_sd_within_run": 0.36996621467371854,
+      "spend_usd": 0.358464,
+      "wall_seconds": 61.373009839095175,
+      "result_path": "results/grep/autoresearch/exp000_baseline/2026-06-24T06-09-27Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.785008194606632,
+      "quality_score": 0.775,
+      "latency_score": 0.99765097303316,
+      "cost_score": 0.42978000000000005,
+      "retrieve_p50_seconds": 0.0046980539336800575,
+      "total_input_tokens": 112794,
+      "total_output_tokens": 1250,
+      "quality_sd_within_run": 0.36996621467371854,
+      "spend_usd": 0.357132,
+      "wall_seconds": 60.36805262300186,
+      "result_path": "results/grep/autoresearch/exp000_baseline/2026-06-24T06-10-28Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.7731504131664684,
+  "composite_sd": 0.01652578374679766,
+  "accepted": true,
+  "reason": "baseline-calibration: no prior accepted composite to compare against",
+  "delta_vs_accepted": 0.0,
+  "created_at": "2026-06-24T06:10:28.077640+00:00",
+  "reasoning": "Baseline calibration run - matches the locked Article-1 MemPalace driver defaults.",
+  "rationale": "Seed the ratchet with the Article-1 configuration composite."
+}

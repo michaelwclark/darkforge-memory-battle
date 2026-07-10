@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp003_0d6de6",
+  "knobs": {
+    "case_sensitive": false,
+    "context_lines": 2,
+    "max_hits": 50,
+    "or_terms": true,
+    "top_k_override": 20
+  },
+  "reps": [
+    {
+      "composite": 0.7585427198028639,
+      "quality_score": 0.7375,
+      "latency_score": 0.9975160990143195,
+      "cost_score": 0.427895,
+      "retrieve_p50_seconds": 0.004967801971361041,
+      "total_input_tokens": 113187,
+      "total_output_tokens": 1234,
+      "quality_sd_within_run": 0.4067785023818245,
+      "spend_usd": 0.35807100000000003,
+      "wall_seconds": 64.957996875979,
+      "result_path": "results/grep/autoresearch/exp003_0d6de6/2026-06-24T06-17-40Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.784829898000896,
+      "quality_score": 0.775,
+      "latency_score": 0.9974794900044799,
+      "cost_score": 0.42834000000000005,
+      "retrieve_p50_seconds": 0.00504101999104023,
+      "total_input_tokens": 113037,
+      "total_output_tokens": 1295,
+      "quality_sd_within_run": 0.36996621467371854,
+      "spend_usd": 0.358536,
+      "wall_seconds": 61.19141576997936,
+      "result_path": "results/grep/autoresearch/exp003_0d6de6/2026-06-24T06-18-42Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.7838091647925972,
+      "quality_score": 0.775,
+      "latency_score": 0.9975208239629865,
+      "cost_score": 0.41805000000000003,
+      "retrieve_p50_seconds": 0.0049583520740270615,
+      "total_input_tokens": 114982,
+      "total_output_tokens": 1408,
+      "quality_sd_within_run": 0.3944933459514875,
+      "spend_usd": 0.366066,
+      "wall_seconds": 66.83065310702659,
+      "result_path": "results/grep/autoresearch/exp003_0d6de6/2026-06-24T06-19-49Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.7757272608654523,
+  "composite_sd": 0.012158448714631112,
+  "accepted": false,
+  "reason": "rejected: delta +0.0026 < required 0.0300 (running_sd=0.0200)",
+  "delta_vs_accepted": 0.0025768476989839195,
+  "created_at": "2026-06-24T06:19:49.161227+00:00",
+  "reasoning": "The baseline uses OR-terms with top_k=null (default) and max_hits=20. Experiment 001 showed that AND-ish matching (or_terms=false) with top_k=5 was catastrophic (-0.41 delta), likely because the ordered regex is too restrictive and top_k=5 is too few. Experiment 002 showed that increasing max_hits to 100 with top_k=15 hurt quality slightly. The baseline OR-terms approach is clearly superior for recall. The key question is whether we can improve quality by retrieving more candidates (higher top_k) while keeping OR-terms. A larger top_k means the judge sees more relevant chunks, which should improve quality on this workload. Let me try top_k=20 with max_hits=50 \u2014 more hits per file means we capture more relevant passages, and top_k=20 gives the judge a richer context pool. This is a meaningful swing: doubling the default top_k and increasing max_hits by 2.5x tests whether the quality bottleneck is retrieval recall.",
+  "rationale": "Doubling top_k to 20 and boosting max_hits to 50 tests whether recall is the quality bottleneck \u2014 a plausible 5-10% quality swing if the baseline is leaving relevant chunks on the floor."
+}

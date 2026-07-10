@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp008_dc06b1",
+  "knobs": {
+    "case_sensitive": true,
+    "context_lines": 2,
+    "max_hits": 50,
+    "or_terms": true,
+    "top_k_override": 50
+  },
+  "reps": [
+    {
+      "composite": 0.7845056393048092,
+      "quality_score": 0.775,
+      "latency_score": 0.9979381965240464,
+      "cost_score": 0.42418,
+      "retrieve_p50_seconds": 0.004123606951907277,
+      "total_input_tokens": 113827,
+      "total_output_tokens": 1337,
+      "quality_sd_within_run": 0.3944933459514875,
+      "spend_usd": 0.36153599999999997,
+      "wall_seconds": 62.96276974491775,
+      "result_path": "results/grep/autoresearch/exp008_dc06b1/2026-06-24T16-48-11Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.8370371144037917,
+      "quality_score": 0.85,
+      "latency_score": 0.9979305720189586,
+      "cost_score": 0.42451000000000005,
+      "retrieve_p50_seconds": 0.004138855962082744,
+      "total_input_tokens": 113765,
+      "total_output_tokens": 1333,
+      "quality_sd_within_run": 0.32977264895682296,
+      "spend_usd": 0.36129,
+      "wall_seconds": 62.23365807184018,
+      "result_path": "results/grep/autoresearch/exp008_dc06b1/2026-06-24T16-49-14Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.8544452206983044,
+      "quality_score": 0.875,
+      "latency_score": 0.9978136034915224,
+      "cost_score": 0.423825,
+      "retrieve_p50_seconds": 0.0043727930169552565,
+      "total_input_tokens": 113837,
+      "total_output_tokens": 1398,
+      "quality_sd_within_run": 0.2680951323690902,
+      "spend_usd": 0.362481,
+      "wall_seconds": 78.54354968294501,
+      "result_path": "results/grep/autoresearch/exp008_dc06b1/2026-06-24T16-50-33Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.8253293248023018,
+  "composite_sd": 0.029728667582979026,
+  "accepted": false,
+  "reason": "rejected: delta -0.0033 < required 0.0416 (running_sd=0.0277)",
+  "delta_vs_accepted": -0.00327478309902296,
+  "created_at": "2026-06-24T16:50:33.136840+00:00",
+  "reasoning": "The current best config is case_sensitive=true, max_hits=50, or_terms=true, top_k_override=30 with composite=0.8286. The key insight from history is: (1) case_sensitive=true gave a big +0.055 boost over case_sensitive=false, (2) or_terms=false catastrophically fails (composite ~0.36), so OR mode is essential, (3) increasing max_hits to 100 with top_k=50 hurt slightly, and (4) reducing top_k to 15 hurt a lot. The current top_k=30 seems like a sweet spot, but I haven't tried pushing top_k higher while keeping max_hits moderate. The hypothesis is that with case_sensitive=true filtering out noise, we can afford to retrieve more candidates (top_k=50) without the quality degradation seen in exp005 \u2014 that experiment also had max_hits=100 which may have introduced noise. Let me try top_k=50 with max_hits=50 (keeping max_hits at the proven level) to see if more retrieved chunks improve recall. This is a meaningful swing: top_k 30\u219250 is a 67% increase in retrieved context, which could meaningfully improve quality by surfacing relevant chunks that were previously cut off.",
+  "rationale": "Increasing top_k from 30 to 50 while holding max_hits=50 and case_sensitive=true tests whether more retrieved candidates improve recall without the noise introduced by max_hits=100 in exp005, a change large enough to plausibly move quality by 5+ percentage points."
+}

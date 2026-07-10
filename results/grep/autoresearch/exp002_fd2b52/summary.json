@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp002_fd2b52",
+  "knobs": {
+    "case_sensitive": false,
+    "context_lines": 2,
+    "max_hits": 100,
+    "or_terms": true,
+    "top_k_override": 15
+  },
+  "reps": [
+    {
+      "composite": 0.6659623282110095,
+      "quality_score": 0.6,
+      "latency_score": 0.9974416410550475,
+      "cost_score": 0.46474000000000004,
+      "retrieve_p50_seconds": 0.005116717889904976,
+      "total_input_tokens": 105946,
+      "total_output_tokens": 1106,
+      "quality_sd_within_run": 0.47037219305566946,
+      "spend_usd": 0.334428,
+      "wall_seconds": 61.99959594896063,
+      "result_path": "results/grep/autoresearch/exp002_fd2b52/2026-06-24T06-14-26Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.683810309701264,
+      "quality_score": 0.625,
+      "latency_score": 0.9975640485063195,
+      "cost_score": 0.46797500000000003,
+      "retrieve_p50_seconds": 0.004871902987360954,
+      "total_input_tokens": 105347,
+      "total_output_tokens": 1058,
+      "quality_sd_within_run": 0.46435439052516775,
+      "spend_usd": 0.331911,
+      "wall_seconds": 58.968028988922015,
+      "result_path": "results/grep/autoresearch/exp002_fd2b52/2026-06-24T06-15-25Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.7446852708147391,
+      "quality_score": 0.7125,
+      "latency_score": 0.9975613540736958,
+      "cost_score": 0.46423000000000003,
+      "retrieve_p50_seconds": 0.004877291852608323,
+      "total_input_tokens": 105905,
+      "total_output_tokens": 1249,
+      "quality_sd_within_run": 0.3974528273896161,
+      "spend_usd": 0.33645,
+      "wall_seconds": 61.08605296793394,
+      "result_path": "results/grep/autoresearch/exp002_fd2b52/2026-06-24T06-16-26Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.6981526362423375,
+  "composite_sd": 0.033700664395088835,
+  "accepted": false,
+  "reason": "rejected: delta -0.0750 < required 0.0300 (running_sd=0.0200)",
+  "delta_vs_accepted": -0.0749977769241309,
+  "created_at": "2026-06-24T06:16:26.518198+00:00",
+  "reasoning": "The previous experiment showed that switching to AND-ish ordered matching (or_terms=false) with top_k=5 was catastrophic, dropping composite by ~0.41. This suggests the corpus has queries where terms appear in varied orders or non-adjacent positions, making the '.*' join too restrictive. The baseline uses OR matching which is permissive. Let me try a different bold direction: keep OR matching but dramatically increase max_hits to 100 and set top_k_override to 15. More hits per file means we capture more relevant passages before ranking, and a higher top_k gives the judge more material to work with. This tests whether the baseline is leaving quality on the table by being too conservative with hit counts and result set size.",
+  "rationale": "Increasing max_hits 5x and top_k to 15 tests whether the baseline is quality-bottlenecked by insufficient retrieval breadth \u2014 a plausible \u22655pp quality swing."
+}

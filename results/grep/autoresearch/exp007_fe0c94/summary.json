@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp007_fe0c94",
+  "knobs": {
+    "case_sensitive": true,
+    "context_lines": 2,
+    "max_hits": 30,
+    "or_terms": true,
+    "top_k_override": 15
+  },
+  "reps": [
+    {
+      "composite": 0.7119295333041921,
+      "quality_score": 0.6625,
+      "latency_score": 0.9979576665209606,
+      "cost_score": 0.48588,
+      "retrieve_p50_seconds": 0.004084666958078742,
+      "total_input_tokens": 101628,
+      "total_output_tokens": 1196,
+      "quality_sd_within_run": 0.44211847959568484,
+      "spend_usd": 0.322824,
+      "wall_seconds": 55.317928748205304,
+      "result_path": "results/grep/autoresearch/exp007_fe0c94/2026-06-24T16-45-01Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.6861783032209501,
+      "quality_score": 0.625,
+      "latency_score": 0.9979565161047503,
+      "cost_score": 0.49087000000000003,
+      "retrieve_p50_seconds": 0.00408696779049933,
+      "total_input_tokens": 100582,
+      "total_output_tokens": 1244,
+      "quality_sd_within_run": 0.4437059837324712,
+      "spend_usd": 0.320406,
+      "wall_seconds": 60.43516678013839,
+      "result_path": "results/grep/autoresearch/exp007_fe0c94/2026-06-24T16-46-02Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.7210683095926047,
+      "quality_score": 0.675,
+      "latency_score": 0.9978290479630232,
+      "cost_score": 0.49002500000000004,
+      "retrieve_p50_seconds": 0.0043419040739536285,
+      "total_input_tokens": 100795,
+      "total_output_tokens": 1200,
+      "quality_sd_within_run": 0.44791182167922294,
+      "spend_usd": 0.32038500000000003,
+      "wall_seconds": 56.85292243002914,
+      "result_path": "results/grep/autoresearch/exp007_fe0c94/2026-06-24T16-46-59Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.7063920487059155,
+  "composite_sd": 0.014772179661120578,
+  "accepted": false,
+  "reason": "rejected: delta -0.1222 < required 0.0416 (running_sd=0.0277)",
+  "delta_vs_accepted": -0.12221205919540923,
+  "created_at": "2026-06-24T16:46:59.212175+00:00",
+  "reasoning": "The current best is exp004 with case_sensitive=true, max_hits=50, or_terms=true, top_k_override=30, composite=0.8286. The big lesson from history is: (1) case_sensitive=true was a huge win (+5.5pp), (2) or_terms=false is catastrophic (scores 0.36), (3) max_hits=100 with top_k=50 hurt vs the baseline. The pattern suggests that with case_sensitive=true and or_terms=true, we want to find the sweet spot for top_k and max_hits. exp005 tried top_k=50/max_hits=100 and got worse. The current accepted has top_k=30/max_hits=50. I want to try a significantly lower top_k (15) combined with lower max_hits (30) \u2014 the hypothesis is that case-sensitive OR matching already produces high-precision hits, so returning fewer but more focused results to the judge improves quality by reducing noise. This is a decisive swing: halving both max_hits and top_k from the accepted baseline, which could move quality substantially in either direction.",
+  "rationale": "Halving both max_hits and top_k from the accepted config tests whether fewer, higher-precision case-sensitive hits outperform the current configuration by reducing noise fed to the judge \u2014 a change large enough to plausibly shift quality by \u22655pp."
+}

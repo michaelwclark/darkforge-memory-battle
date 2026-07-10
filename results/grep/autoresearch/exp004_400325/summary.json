@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp004_400325",
+  "knobs": {
+    "case_sensitive": true,
+    "context_lines": 2,
+    "max_hits": 50,
+    "or_terms": true,
+    "top_k_override": 30
+  },
+  "reps": [
+    {
+      "composite": 0.8196237306100055,
+      "quality_score": 0.825,
+      "latency_score": 0.9979161530500278,
+      "cost_score": 0.42540500000000003,
+      "retrieve_p50_seconds": 0.004167693899944425,
+      "total_input_tokens": 113526,
+      "total_output_tokens": 1393,
+      "quality_sd_within_run": 0.3544361719689456,
+      "spend_usd": 0.361473,
+      "wall_seconds": 63.16526248212904,
+      "result_path": "results/grep/autoresearch/exp004_400325/2026-06-24T06-21-01Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.8114417604922801,
+      "quality_score": 0.8125,
+      "latency_score": 0.9979688024614006,
+      "cost_score": 0.43098000000000003,
+      "retrieve_p50_seconds": 0.004062395077198744,
+      "total_input_tokens": 112405,
+      "total_output_tokens": 1399,
+      "quality_sd_within_run": 0.3524468044967921,
+      "spend_usd": 0.35819999999999996,
+      "wall_seconds": 60.185297288000584,
+      "result_path": "results/grep/autoresearch/exp004_400325/2026-06-24T06-22-01Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.8547468326016887,
+      "quality_score": 0.875,
+      "latency_score": 0.997909163008444,
+      "cost_score": 0.42665,
+      "retrieve_p50_seconds": 0.004181673983111978,
+      "total_input_tokens": 113155,
+      "total_output_tokens": 1515,
+      "quality_sd_within_run": 0.3010398644698074,
+      "spend_usd": 0.36219,
+      "wall_seconds": 63.37907323194668,
+      "result_path": "results/grep/autoresearch/exp004_400325/2026-06-24T06-23-05Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.8286041079013248,
+  "composite_sd": 0.01878505966313126,
+  "accepted": true,
+  "reason": "accepted: delta +0.0555 >= required 0.0300 (running_sd=0.0200)",
+  "delta_vs_accepted": 0.055453694734856396,
+  "created_at": "2026-06-24T06:23:05.344985+00:00",
+  "reasoning": "The baseline uses OR-terms with top_k_override=null (track default). Experiment 001 showed that AND-ish matching (or_terms=false) with top_k=5 catastrophically hurt quality (composite 0.36), likely because the ordered '.*' join is too strict and misses relevant documents. Experiment 002 showed that increasing max_hits to 100 with top_k=15 hurt quality (0.698), suggesting more hits dilutes ranking. Experiment 003 with max_hits=50 and top_k=20 barely matched baseline. The key unexplored axis is case_sensitive=true combined with a higher top_k \u2014 on a technical corpus (Dark Forge workload), exact-case matching may dramatically reduce noise by avoiding spurious case-insensitive matches, while increasing top_k to 30 gives the ranker more candidates to work with. This is a fundamentally different retrieval mode that could plausibly shift quality by 5+ points in either direction.",
+  "rationale": "Switching to case-sensitive matching on a technical corpus tests whether exact-case precision outweighs recall loss, combined with top_k=30 to compensate for any recall drop \u2014 a multi-knob swing that could move quality by \u22655 percentage points."
+}

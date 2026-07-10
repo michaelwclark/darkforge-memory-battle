@@ -1,0 +1,59 @@
+{
+  "experiment_id": "exp005_6dba8b",
+  "knobs": {
+    "case_sensitive": true,
+    "context_lines": 2,
+    "max_hits": 100,
+    "or_terms": true,
+    "top_k_override": 50
+  },
+  "reps": [
+    {
+      "composite": 0.8369413375842646,
+      "quality_score": 0.85,
+      "latency_score": 0.9979091879213229,
+      "cost_score": 0.42359500000000005,
+      "retrieve_p50_seconds": 0.004181624157354236,
+      "total_input_tokens": 113843,
+      "total_output_tokens": 1438,
+      "quality_sd_within_run": 0.3,
+      "spend_usd": 0.363099,
+      "wall_seconds": 68.19174728402868,
+      "result_path": "results/grep/autoresearch/exp005_6dba8b/2026-06-24T06-24-23Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep0.json"
+    },
+    {
+      "composite": 0.802064230680734,
+      "quality_score": 0.8,
+      "latency_score": 0.9978861534036696,
+      "cost_score": 0.42486999999999997,
+      "retrieve_p50_seconds": 0.0042276931926608086,
+      "total_input_tokens": 113721,
+      "total_output_tokens": 1305,
+      "quality_sd_within_run": 0.3758324094593227,
+      "spend_usd": 0.360738,
+      "wall_seconds": 71.00807704986073,
+      "result_path": "results/grep/autoresearch/exp005_6dba8b/2026-06-24T06-25-34Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep1.json"
+    },
+    {
+      "composite": 0.7493994656220824,
+      "quality_score": 0.725,
+      "latency_score": 0.9978973281104118,
+      "cost_score": 0.4232,
+      "retrieve_p50_seconds": 0.004205343779176474,
+      "total_input_tokens": 113895,
+      "total_output_tokens": 1465,
+      "quality_sd_within_run": 0.425,
+      "spend_usd": 0.36366000000000004,
+      "wall_seconds": 65.36790920887142,
+      "result_path": "results/grep/autoresearch/exp005_6dba8b/2026-06-24T06-26-39Z__grep_retrieval_tuned__track_a_oracle_autoresearch__rep2.json"
+    }
+  ],
+  "composite_mean": 0.7961350112956936,
+  "composite_sd": 0.03598389981225612,
+  "accepted": false,
+  "reason": "rejected: delta -0.0325 < required 0.0416 (running_sd=0.0277)",
+  "delta_vs_accepted": -0.03246909660563113,
+  "created_at": "2026-06-24T06:26:40.023084+00:00",
+  "reasoning": "The current best config uses case_sensitive=true, or_terms=true, max_hits=50, top_k_override=30. The big unexplored dimension is top_k_override \u2014 we're returning 30 chunks but maybe quality improves significantly with more context chunks available to the judge. Going from 30 to 50 is a meaningful jump (67% more chunks), which should help recall on multi-hop or complex queries. Simultaneously, I'll bump max_hits to 100 to ensure we're not bottlenecking the candidate pool before ranking. The case_sensitive=true setting proved valuable (gained +5.5pp), so I keep that. or_terms=true stays since AND-ish matching (exp001) was catastrophic. This combination tests whether the quality ceiling is limited by how many chunks we surface to the judge.",
+  "rationale": "Doubling the chunks returned to the judge (30\u219250) and expanding the per-file hit cap (50\u2192100) tests whether quality is recall-limited, a change large enough to plausibly move quality by 5+ percentage points."
+}

@@ -1,0 +1,36 @@
+[2026-06-24T16:41:25Z] Phase 3b MASTER starting
+[2026-06-24T16:41:25Z] Step 1: Exploration wave (max 8 exps, cumulative cap $14.50)...
+STEP1_EXPLORE_DONE
+[2026-06-24T16:50:33Z] Step 1 complete. Determining best accepted config...
+BEST_EXP=exp004_400325
+BEST_COMPOSITE=0.8286
+BEST_KNOBS={"case_sensitive": true, "context_lines": 2, "max_hits": 50, "or_terms": true, "top_k_override": 30}
+WINNER_KNOBS: {"case_sensitive": true, "context_lines": 2, "max_hits": 50, "or_terms": true, "top_k_override": 30}
+[2026-06-24T16:50:33Z] Cumulative spend after exploration: $7.641
+Remaining budget: $17.36
+[2026-06-24T16:50:33Z] Step 2: Validation Track A n=100 (2 reps)...
+[2026-06-24T16:50:33Z] Track A n=100 rep 0...
+TRACK_A_REP0_DONE
+[2026-06-24T16:55:46Z] Track A n=100 rep 1...
+TRACK_A_REP1_DONE
+STEP2_VALIDATE_TRACK_A_DONE
+[2026-06-24T17:01:02Z] Step 3: Validation Track C n=30 (1 rep)...
+STEP3_VALIDATE_TRACK_C_DONE
+[2026-06-24T17:03:13Z] Phase 3b COMPLETE. Computing final summary...
+=== FINAL LEADERBOARD ===
+  exp000_baseline: 0.7732 +-0.0165 [ACCEPTED] knobs={'case_sensitive': False, 'context_lines': 2, 'max_hits': 20, 'or_terms': True, 'top_k_override': None}
+  exp001_0269c5: 0.3636 +-0.0000 [REJECTED] knobs={'case_sensitive': False, 'context_lines': 2, 'max_hits': 20, 'or_terms': False, 'top_k_override': 5}
+  exp002_fd2b52: 0.6982 +-0.0337 [REJECTED] knobs={'case_sensitive': False, 'context_lines': 2, 'max_hits': 100, 'or_terms': True, 'top_k_override': 15}
+  exp003_0d6de6: 0.7757 +-0.0122 [REJECTED] knobs={'case_sensitive': False, 'context_lines': 2, 'max_hits': 50, 'or_terms': True, 'top_k_override': 20}
+  exp004_400325: 0.8286 +-0.0188 [ACCEPTED] knobs={'case_sensitive': True, 'context_lines': 2, 'max_hits': 50, 'or_terms': True, 'top_k_override': 30}
+  exp005_6dba8b: 0.7961 +-0.0360 [REJECTED] knobs={'case_sensitive': True, 'context_lines': 2, 'max_hits': 100, 'or_terms': True, 'top_k_override': 50}
+  exp006_55f9c6: 0.3636 +-0.0000 [REJECTED] knobs={'case_sensitive': True, 'context_lines': 2, 'max_hits': 50, 'or_terms': False, 'top_k_override': 40}
+  exp007_fe0c94: 0.7064 +-0.0148 [REJECTED] knobs={'case_sensitive': True, 'context_lines': 2, 'max_hits': 30, 'or_terms': True, 'top_k_override': 15}
+  exp008_dc06b1: 0.8253 +-0.0297 [REJECTED] knobs={'case_sensitive': True, 'context_lines': 2, 'max_hits': 50, 'or_terms': True, 'top_k_override': 50}
+  : composite=0.0000 quality=0.0000 [2 reps]
+  : composite=0.0000 quality=0.0000 [1 reps]
+
+TOTAL SPEND: $7.641
+REMAINING vs $25: $17.359
+ALL_DONE
+[2026-06-24T17:03:13Z] Phase 3b master script finished.

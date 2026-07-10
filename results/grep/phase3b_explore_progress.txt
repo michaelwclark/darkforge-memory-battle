@@ -1,0 +1,5 @@
+[2026-06-24T16:41:25Z] Phase 3b exploration starting
+Budget: cumulative $14.50 hard cap, max-experiments 8
+Winner so far: exp004 case_sensitive=True max_hits=50 or_terms=True top_k_override=30 context_lines=2 composite=0.8286
+[2026-06-24T16:50:33Z] Exploration complete (exit=0)
+EXPLORE_DONE exit=0
