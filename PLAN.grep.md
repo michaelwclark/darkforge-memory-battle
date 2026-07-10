@@ -122,9 +122,14 @@ from whatever is on disk. It writes no MongoDB, no Notion, no memory.
 | A — exploration | 9 experiments (`exp000`–`exp008`), 3 reps each, ratchet accept/reject | ✅ 2026-06-24, $7.64 |
 | A — validation | Track A n=100 × 2 reps; Track C n=30 × 1 rep | ✅ 2026-06-24, $3.81 |
 | Analytics | `analytics.py` + builder + 3 passing tests | ✅ 2026-07-10 |
+| Wrapper live-check | Both sanity paths through `run_grep_battle.py`, quality 1.0000, rc=0 | ✅ 2026-07-10, $0.06 |
 | C — battle-eligible | Claude/Claude judge on Track C, publishable | ⏸ not started — see Open questions |
 
-Total spend to date: **$11.48**.
+Total spend to date: **$11.54**.
+
+Phase A ran through an ad-hoc `phase3b` master script, not the wrapper. The
+wrapper's first live execution was the 2026-07-10 sanity check; treat it as
+newly-exercised code rather than long-proven.
 
 ### The ratchet's accept/reject trail
 
