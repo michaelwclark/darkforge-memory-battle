@@ -26,6 +26,7 @@ A few rules the harness enforces:
 | Hindsight | [`contestants/hindsight.py`](./src/darkforge_memory_battle/contestants/hindsight.py) | LLM-extraction, biomimetic memory types | operational (requires Docker container) |
 | Mem0 | [`contestants/mem0.py`](./src/darkforge_memory_battle/contestants/mem0.py) | LLM-extraction, 3-tier scope | operational |
 | MemPalace | [`contestants/mempalace.py`](./src/darkforge_memory_battle/contestants/mempalace.py) | hall/drawer routing, core pipeline LLM-free | operational |
+| GrepRetrieval | [`contestants/grep_retrieval.py`](./src/darkforge_memory_battle/contestants/grep_retrieval.py) | local ripgrep lexical retrieval, isolated under `results/grep/` | operational |
 | Letta | [`contestants/letta.py`](./src/darkforge_memory_battle/contestants/letta.py) | agent-managed tiered memory | scaffold only, not run yet |
 | Zep / Graphiti | — | temporal knowledge graph | not wired yet |
 
@@ -69,6 +70,14 @@ uv run python scripts/run_sanity.py --contestant mempalace
 ```
 
 Each produces a JSON at `results/<timestamp>__<contestant>__sanity.json`.
+
+The grep contestant uses its own isolated runtime wrapper so the legacy
+orchestrator does not pick up grep results:
+
+```bash
+uv run python scripts/run_grep_battle.py sanity
+uv run python scripts/run_grep_battle.py autoresearch --phase a --dry-run
+```
 
 ### Run Track A (LongMemEval n=20 stratified)
 

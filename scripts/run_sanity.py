@@ -6,6 +6,7 @@ plumbing before committing LongMemEval budget.
     uv run python scripts/run_sanity.py --contestant mem0
     uv run python scripts/run_sanity.py --contestant mempalace
     uv run python scripts/run_sanity.py --contestant grep_retrieval
+    uv run python scripts/run_sanity.py --contestant grep_retrieval_tuned
 """
 
 from __future__ import annotations
@@ -58,6 +59,18 @@ def _build_contestant(name: str):
         from darkforge_memory_battle.contestants.grep_retrieval import GrepRetrievalContestant
 
         return GrepRetrievalContestant(base_dir="./data/grep_retrieval__sanity", bank_id="sanity")
+    if name == "grep_retrieval_tuned":
+        from darkforge_memory_battle.contestants.grep_retrieval_tunable import (
+            GrepRetrievalTunableContestant,
+        )
+
+        baseline = Path("config/autoresearch/baseline.grep_retrieval.json")
+        knobs = json.loads(baseline.read_text(encoding="utf-8"))["knobs"]
+        return GrepRetrievalTunableContestant(
+            config=knobs,
+            base_dir="./data/grep_retrieval_tuned__sanity",
+            bank_id="sanity",
+        )
     raise ValueError(f"unknown contestant: {name}")
 
 
