@@ -17,23 +17,37 @@ watches `PLAN.md` and top-level `results/*.json`.
 2026-06-24 and cost $11.48. Do not re-run it — the receipts are committed
 under `results/grep/`.
 
-The headline result is a **generalization gap**, not a win:
+The headline result is a **suspected generalization gap — indicative, not
+established.** Read the next four paragraphs before repeating it anywhere.
 
-| Measurement | Track | n | Quality |
-| --- | --- | --- | --- |
-| Tuned winner (`exp004_400325`) | `track_a_oracle_autoresearch` | 20 | **0.8375** |
-| Same config, held-out validation | `track_a_oracle_validation_n100` | 100 | **0.5988** |
-| Same config, Dark Forge workload | `track_c_validation` | 30 | 0.7217 |
+| Measurement | Config | Track | n | Quality |
+| --- | --- | --- | --- | --- |
+| Tuning winner | `exp004_400325` | `track_a_oracle_autoresearch` | 20 | **0.8375** |
+| Baseline | `exp000_baseline` | `track_a_oracle_autoresearch` | 20 | 0.7583 |
+| Winner, held out | `exp004_400325` | `track_a_oracle_validation_n100` | 100 | **0.5988** |
+| Baseline, held out | — | — | 100 | **never run** |
+| Winner, Dark Forge | `exp004_400325` | `track_c_validation` | 30 | 0.7217 (1 rep) |
 
-Autoresearch tuned the knobs against an n=20 stratified subset and gained
-~7 points over baseline (0.7583 → 0.8375). On the n=100 held-out set the same
-config scores 0.5988 — **below the n=20 baseline**. The tuning gains did not
-survive contact with unseen questions.
+Autoresearch tuned against an n=20 stratified subset and gained ~7 points over
+baseline there (0.7583 → 0.8375). The same winning config then scores 0.5988 on
+the held-out n=100 set.
 
-That is a publishable null-result and it is on-thesis for the article series:
-autoresearch on a small subset produces numbers that look like progress and
-generalize poorly. Treat the 0.8375 as an artifact of the tuning set, never as
-the grep contestant's score.
+**That 24-point drop is not yet evidence of overfitting.** The only n=100 run in
+the tree is the tuned winner. Comparing winner-at-n=100 against baseline-at-n=20
+varies *both* the config and the sample at once, so the drop could be nothing
+more than the n=100 set being harder than the n=20 stratified subset. A
+retriever that never saw tuning would likely drop too.
+
+The clean test is **baseline vs winner on the same n=100 set**, and it has not
+been run. The judge is not a confound — both Track A runs used the same
+`judge.ablation-claude-answer.yaml` — so the missing baseline-at-n=100 is the
+single open variable. Roughly $1.50/rep; ~$3 for 2 reps, matching what the tuned
+n=100 pair cost.
+
+Until that run exists: report 0.5988 as the winner's held-out score, and say the
+generalization gap is *indicated*. Do not claim the tuning gains failed to
+generalize, and never cite 0.8375 as the grep contestant's score — it is a
+tuning-set number either way.
 
 **The next real decision is a judgment call, not a command** — see
 [Open questions](#open-questions).
@@ -53,6 +67,21 @@ Phase A's judge config (`config/judge.ablation-claude-answer.yaml`) uses
 
 So: edit and analyze on bigmac, execute battles on genomesbox. If you skip this
 and run on a Mac, the answer calls bill OpenRouter and then scoring dies.
+
+Get the code onto genomesbox before running anything — on 2026-07-10 it had
+neither the wrapper nor this file, because Phase A ran from an ad-hoc script:
+
+```bash
+ssh genomesbox
+cd ~/projects/darkforge-memory-battle
+git fetch origin && git checkout feat/grep-contestant && git pull --ff-only
+```
+
+If `git pull` reports "no upstream", run
+`git branch --set-upstream-to=origin/feat/grep-contestant feat/grep-contestant`
+first. Never `rm -rf results/grep` to clear a pull conflict: that directory
+holds a *tracked* sanity receipt, and a fast-forward will not restore it
+(`git checkout -- results/grep/` does).
 
 ---
 
@@ -183,11 +212,15 @@ master script, emit a `summary.json` for validation dirs.
 
 These need a human call before more money moves.
 
-1. **Is the generalization gap the finding, or a bug?** Before publishing the
-   overfitting claim, confirm the n=100 validation used the same knobs as
-   `exp004` and that the n=20 subset is a strict subset of the n=100 set. If the
-   n=100 set is drawn differently, some of the 24-point drop is sampling, not
-   overfitting.
+1. **Run `exp000_baseline` knobs on Track A n=100.** This is the highest-value
+   next action and it settles the headline. Right now the tree has no baseline
+   at n=100, so the 24-point drop cannot distinguish "tuning overfit" from
+   "n=100 is simply a harder set." Two reps ≈ $3, same judge config
+   (`judge.ablation-claude-answer.yaml`), same seed. If the baseline also
+   collapses to ~0.60, there is no overfitting story — the n=100 set is harder.
+   If the baseline holds near 0.75, the overfitting finding is real and
+   publishable. Also confirm whether the n=20 subset is a strict subset of the
+   n=100 set; if it is drawn differently, some of the drop is sampling.
 2. **Should Phase C run battle-eligible?** `track_c_validation` already ran with
    `battle_eligible=true`, but only 1 rep. The harness rule is ≥3 reps, mean ±
    SD, no single-run numbers. Publishing that 0.7217 as-is violates the repo's
